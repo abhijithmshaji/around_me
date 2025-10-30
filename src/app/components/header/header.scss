@@ -1,0 +1,109 @@
+// 🎨 Color Variables
+$primary-color: #4f46e5;
+$accent-color: #f59e0b;
+$text-light: #ffffff;
+$text-dark: #1f2937;
+$bg-light: #f5f5f5;
+$bg-dark: #1e1e2f;
+
+// 🧭 Toolbar Layout
+mat-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: $primary-color;
+  color: $text-light;
+  padding: 0 16px;
+  height: 64px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: background 0.3s ease;
+
+  // Title / Brand
+  span {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  // Spacing between left and right content
+  .example-spacer {
+    flex: 1 1 auto;
+  }
+
+  // Material Icon Buttons
+  button[matIconButton] {
+    color: $text-light;
+    margin: 0 4px;
+    transition: transform 0.2s ease, color 0.3s ease;
+
+    &:hover {
+      color: lighten($accent-color, 10%);
+      transform: scale(1.1);
+    }
+
+    mat-icon {
+      font-size: 24px;
+    }
+  }
+
+  // Highlight favorite icon with accent
+  .favorite-icon {
+    color: $accent-color;
+
+    &:hover {
+      color: lighten($accent-color, 15%);
+    }
+  }
+}
+
+// 🌗 Optional — Light theme variant
+.light-theme {
+  mat-toolbar {
+    background: $bg-light;
+    color: $text-dark;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    button[matIconButton] {
+      color: $text-dark;
+
+      &:hover {
+        color: $primary-color;
+      }
+    }
+
+    .favorite-icon {
+      color: $accent-color;
+    }
+  }
+}
+
+  .logout-btn {
+    background: #709cdb;
+    color: #ffffff;
+    border: 1px solid #55b4e04d;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 10px;
+    // font-weight: 50;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    height: 30px;
+    line-height: 1;
+
+    mat-icon {
+      font-size: 18px;
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: scale(0.97);
+    }
+  }

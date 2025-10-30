@@ -1,0 +1,116 @@
+// 🎨 Variables
+$primary-color: #4f46e5;
+$primary-hover: #4338ca;
+$text-color: #1f2937;
+$gray-color: #6b7280;
+$input-border: #d1d5db;
+$bg-gradient: linear-gradient(135deg, #3b82f6, #4f46e5);
+
+// 🧭 Layout
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: $bg-gradient;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+    .login-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 40px 40px;
+        width: 100%;
+        max-width: 400px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        text-align: center;
+
+        h2 {
+            font-size: 28px;
+            color: $text-color;
+            margin-bottom: 24px;
+            font-weight: 700;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center; // centers all children horizontally
+
+            .form-group {
+                width: 100%;
+                max-width: 320px; // keeps inputs centered within the card
+                text-align: left;
+                margin-bottom: 18px;
+
+                label {
+                    display: block;
+                    font-weight: 600;
+                    color: darken($text-color, 10%);
+                    margin-bottom: 8px;
+                }
+
+                input {
+                    width: 100%;
+                    padding: 12px 14px;
+                    border: 1px solid $input-border;
+                    border-radius: 8px;
+                    font-size: 15px;
+                    outline: none;
+                    transition: all 0.2s ease;
+                    max-width: 320px;
+                    min-width: unset;
+                    display: inline-block;
+                    box-sizing: border-box;
+
+                    &:focus {
+                        border-color: $primary-color;
+                        box-shadow: 0 0 0 3px rgba($primary-color, 0.25);
+                    }
+                }
+            }
+
+            .form-action {
+                width: 100%;
+                max-width: 320px;
+                display: flex;
+                justify-content: center;
+
+                button {
+                    width: 100%;
+                    background: $primary-color;
+                    color: #fff;
+                    border: none;
+                    border-radius: 8px;
+                    padding: 12px;
+                    font-size: 16px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: background 0.3s ease;
+
+                    &:hover {
+                        background: $primary-hover;
+                    }
+                }
+            }
+        }
+
+        .signup-text {
+            font-size: 14px;
+            color: $gray-color;
+            margin-top: 24px;
+
+            a {
+                color: $primary-color;
+                font-weight: 600;
+                text-decoration: none;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+    .achor{
+        cursor: pointer;
+    }
+}

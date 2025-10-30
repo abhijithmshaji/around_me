@@ -1,0 +1,59 @@
+<div class="login-container">
+    <div class="login-card">
+        <h2>Register</h2>
+
+        <form [formGroup]="registerForm" (ngSubmit)="register()">
+            <!-- Name -->
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input id="name" type="text" formControlName="name" placeholder="Enter your name"
+                    [class.invalid]="f['name'].touched && f['name'].invalid" />
+                @if (f['name'].touched && f['name'].hasError('required')) {
+                <div class="error">
+                    Name is required
+                </div>
+                }
+            </div>
+
+            <!-- Email -->
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input id="email" type="email" formControlName="email" placeholder="Enter your email"
+                    [class.invalid]="f['email'].touched && f['email'].invalid" />
+                @if (f['email'].touched && f['email'].hasError('required')) {
+                <div class="error">
+                    Email is required
+                </div>
+                }
+                @if (f['email'].touched && f['email'].hasError('email')) {
+                <div class="error">
+                    Enter a valid email address
+                </div>
+                }
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input id="password" type="password" formControlName="password" placeholder="Enter your password"
+                    [class.invalid]="f['password'].touched && f['password'].invalid" />
+                @if (f['password'].touched && f['password'].hasError('required')) {
+                <div class="error">
+                    Password is required
+                </div>
+                }
+                @if (f['password'].touched && f['password'].hasError('minlength')) {
+                <div class="error">
+                    Password must be at least 6 characters
+                </div>
+                }
+            </div>
+
+            <!-- Submit Button -->
+            <div class="form-action">
+                <button type="submit" [disabled]="registerForm.invalid">Submit</button>
+            </div>
+        </form>
+
+    </div>
+</div>
