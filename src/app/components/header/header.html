@@ -1,4 +1,4 @@
-<mat-toolbar>
+<!-- <mat-toolbar>
   <button matIconButton class="example-icon" aria-label="Example icon-button with menu icon">
     <mat-icon>menu</mat-icon>
   </button>
@@ -10,4 +10,29 @@
   <button  class="logout-btn" (click)="logout()">
   <span>Logout</span>
 </button>
-</mat-toolbar>
+</mat-toolbar> -->
+<header class="navbar">
+  <!-- Logo -->
+  <div class="logo">
+    <img src="/assets/images/logo.png" alt="AroundMe Logo" />
+    <h2>Event<span>ify</span></h2>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav-links">
+    <a
+      *ngFor="let item of menuItems"
+      [routerLink]="item.path"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      >{{ item.label }}</a
+    >
+  </nav>
+
+  <!-- Right Actions -->
+  <div class="auth-buttons">
+    <a routerLink="/create-event" class="create-event">Create Event</a>
+    <a routerLink="/login" class="login">Login</a>
+    <a routerLink="/register" class="signup">Sign Up</a>
+  </div>
+</header>

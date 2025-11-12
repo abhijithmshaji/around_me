@@ -14,6 +14,7 @@ import { User } from '../../services/user/user';
 export class Register {
 
   public registerForm: FormGroup;
+  public selectedRole: 'general' | 'manager' = 'general'
 
   constructor(private fb: FormBuilder, private router: Router, private userService: User) {
     this.registerForm = this.fb.group({
@@ -26,8 +27,11 @@ export class Register {
 
   public register() {
     if (this.registerForm.valid) {
-      const userData = this.registerForm.value
-      console.log('Form Data:', this.registerForm.value);
+      const userData = {
+        ...this.registerForm.value,
+        role: this.selectedRole 
+      };
+      console.log('Form Data:', userData);
       this.userService.registerUsers(userData).subscribe({
         next: (res) => {
           console.log(res);
@@ -43,5 +47,9 @@ export class Register {
   }
   public get f() {
     return this.registerForm.controls;
+  }
+
+  public setRole(role: 'general' | 'manager') {
+    this.selectedRole = role;
   }
 }

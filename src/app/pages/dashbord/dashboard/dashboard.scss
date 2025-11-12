@@ -1,0 +1,183 @@
+// === Variables ===
+$primary-color: #ffcc00;
+$text-dark: #222;
+$text-light: #fff;
+$gray-light: #f5f5f5;
+$gray-border: #ddd;
+$transition: all 0.3s ease;
+
+// === Mixins ===
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin button-reset {
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: $transition;
+}
+
+// === Hero Section ===
+.hero-section {
+  position: relative;
+  height: 400px;
+  background: url('/assets/images/hero.jpg') center/cover no-repeat;
+
+  .overlay {
+    background: rgba(0, 0, 0, 0.55);
+    height: 100%;
+    @include flex-center;
+    flex-direction: column;
+    text-align: center;
+    color: $text-light;
+    padding: 0 1rem;
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+
+      .highlight {
+        color: $primary-color;
+        font-weight: 600;
+      }
+    }
+
+    .search-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+
+      input,
+      select {
+        padding: 0.8rem 1rem;
+        border-radius: 6px;
+        border: none;
+        outline: none;
+        font-size: 1rem;
+        min-width: 250px;
+      }
+
+      button {
+        @include button-reset;
+        background-color: $primary-color;
+        color: $text-dark;
+        padding: 0.8rem 1.5rem;
+        border-radius: 6px;
+        font-weight: 600;
+
+        &:hover {
+          background-color: darken($primary-color, 8%);
+        }
+      }
+    }
+  }
+}
+
+// === Categories Section ===
+.categories {
+  padding: 3rem 1rem;
+  text-align: center;
+
+  h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+  }
+
+  .category-list {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+}
+
+// === Popular Events ===
+.popular-events {
+  padding: 3rem 1rem;
+  background: $gray-light;
+
+  h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .tabs {
+    @include flex-center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+
+    button {
+      @include button-reset;
+      font-weight: 600;
+      padding-bottom: 0.25rem;
+      border-bottom: 2px solid transparent;
+      color: $text-dark;
+
+      &.active {
+        border-color: $primary-color;
+        color: $primary-color;
+      }
+
+      &:hover {
+        color: darken($primary-color, 10%);
+      }
+    }
+  }
+
+  .event-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+    padding: 0 1rem;
+  }
+
+  .see-more {
+    @include button-reset;
+    display: block;
+    margin: 2rem auto 0;
+    border: 1px solid $gray-border;
+    padding: 0.8rem 2rem;
+    border-radius: 6px;
+    font-weight: 500;
+
+    &:hover {
+      background-color: $primary-color;
+      color: $text-dark;
+    }
+  }
+}
+
+// === Responsive Design ===
+@media (max-width: 768px) {
+  .hero-section {
+    height: 300px;
+
+    .overlay {
+      h1 {
+        font-size: 1.8rem;
+      }
+      p {
+        font-size: 1rem;
+      }
+
+      .search-bar {
+        flex-direction: column;
+        align-items: stretch;
+        input, select {
+          width: 100%;
+        }
+      }
+    }
+  }
+}

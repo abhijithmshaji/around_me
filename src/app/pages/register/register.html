@@ -1,10 +1,10 @@
-<div class="login-container">
+<!-- <div class="login-container">
     <div class="login-card">
         <h2>Register</h2>
 
-        <form [formGroup]="registerForm" (ngSubmit)="register()">
+        <form [formGroup]="registerForm" (ngSubmit)="register()"> -->
             <!-- Name -->
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <label for="name">Name</label>
                 <input id="name" type="text" formControlName="name" placeholder="Enter your name"
                     [class.invalid]="f['name'].touched && f['name'].invalid" />
@@ -13,10 +13,10 @@
                     Name is required
                 </div>
                 }
-            </div>
+            </div> -->
 
             <!-- Email -->
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <label for="email">Email</label>
                 <input id="email" type="email" formControlName="email" placeholder="Enter your email"
                     [class.invalid]="f['email'].touched && f['email'].invalid" />
@@ -30,10 +30,10 @@
                     Enter a valid email address
                 </div>
                 }
-            </div>
+            </div> -->
 
             <!-- Password -->
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <label for="password">Password</label>
                 <input id="password" type="password" formControlName="password" placeholder="Enter your password"
                     [class.invalid]="f['password'].touched && f['password'].invalid" />
@@ -48,12 +48,102 @@
                 </div>
                 }
             </div>
+            <div class="role-toggle">
+                <button type="button" [class.active]="selectedRole === 'general'" (click)="setRole('general')">
+                    Register as General User
+                </button>
+                <button type="button" [class.active]="selectedRole === 'manager'" (click)="setRole('manager')">
+                    Register as Manager
+                </button>
+            </div> -->
 
             <!-- Submit Button -->
-            <div class="form-action">
+            <!-- <div class="form-action">
                 <button type="submit" [disabled]="registerForm.invalid">Submit</button>
             </div>
         </form>
 
     </div>
+</div> -->
+<div class="register-page">
+  <!-- Left Side -->
+  <div class="left-panel">
+    <div class="logo">
+      <img src="/assets/images/logo.png" alt="AroundMe Logo" />
+      <h2>Around<span>Me</span></h2>
+    </div>
+    <div class="promo-wrapper">
+    <div class="promo-text">
+      <h3>Discover tailored events.</h3>
+      <h3>Sign up for personalized recommendations today!</h3>
+    </div>
+    </div>
+  </div>
+
+  <!-- Right Side -->
+  <div class="form-panel">
+    <div class="form-container">
+      <h2>Create Account</h2>
+
+      <!-- <div class="social-login">
+        <button class="google" (click)="signUpWithGoogle()">
+          <img src="/assets/icons/google.svg" alt="Google" /> Sign up with Google
+        </button>
+        <button class="facebook" (click)="signUpWithFacebook()">
+          <img src="/assets/icons/facebook.svg" alt="Facebook" /> Sign up with Facebook
+        </button>
+      </div> -->
+
+      <!-- <div class="divider">OR</div> -->
+
+      <form [formGroup]="registerForm" (ngSubmit)="register()">
+        <div class="form-group">
+          <label for="name">Name</label>
+                <input id="name" type="text" formControlName="name" placeholder="Enter your name"
+                    [class.invalid]="f['name'].touched && f['name'].invalid" />
+                @if (f['name'].touched && f['name'].hasError('required')) {
+                <div class="error">
+                    Name is required
+                </div>
+                }
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+                <input id="email" type="email" formControlName="email" placeholder="Enter your email"
+                    [class.invalid]="f['email'].touched && f['email'].invalid" />
+                @if (f['email'].touched && f['email'].hasError('required')) {
+                <div class="error">
+                    Email is required
+                </div>
+                }
+                @if (f['email'].touched && f['email'].hasError('email')) {
+                <div class="error">
+                    Enter a valid email address
+                </div>
+                }
+        </div>
+
+        <div class="form-group password-field">
+          <label for="password">Password</label>
+                <input id="password" type="password" formControlName="password" placeholder="Enter your password"
+                    [class.invalid]="f['password'].touched && f['password'].invalid" />
+                @if (f['password'].touched && f['password'].hasError('required')) {
+                <div class="error">
+                    Password is required
+                </div>
+                }
+                @if (f['password'].touched && f['password'].hasError('minlength')) {
+                <div class="error">
+                    Password must be at least 6 characters
+                </div>
+                }
+        </div>
+
+        <button type="submit" class="create-account-btn">Create Account</button>
+      </form>
+
+      <p class="login-text">Already have an account? <a routerLink="/login">Log in</a></p>
+    </div>
+  </div>
 </div>
