@@ -24,7 +24,9 @@ $transition: all 0.3s ease;
 .hero-section {
   position: relative;
   height: 400px;
+  padding-bottom: 0;
   background: url('/assets/images/hero.jpg') center/cover no-repeat;
+  
 
   .overlay {
     background: rgba(0, 0, 0, 0.55);
@@ -63,7 +65,7 @@ $transition: all 0.3s ease;
         border: none;
         outline: none;
         font-size: 1rem;
-        min-width: 250px;
+        min-width: 300px;
       }
 
       button {

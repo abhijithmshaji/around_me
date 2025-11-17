@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Auth } from '../../services/auth/auth';
 import { User } from '../../services/user/user';
 
 @Component({
@@ -51,5 +50,9 @@ export class Register {
 
   public setRole(role: 'general' | 'manager') {
     this.selectedRole = role;
+  }
+
+  public navigateToLogin(){
+    this.router.navigate(['/'])
   }
 }

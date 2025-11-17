@@ -1,0 +1,247 @@
+<div class="add-event-wrapper">
+    <h2>Create a New Event</h2>
+
+    <!-- Step Progress Bar -->
+    <div class="steps">
+        <div class="step" [class.active]="currentStep >= 1">
+            <div class="circle">1</div>
+            <span>Edit</span>
+        </div>
+        <div class="step" [class.active]="currentStep >= 2">
+            <div class="circle">2</div>
+            <span>Banner</span>
+        </div>
+        <div class="step" [class.active]="currentStep >= 3">
+            <div class="circle">3</div>
+            <span>Ticketing</span>
+        </div>
+        <div class="step" [class.active]="currentStep >= 4">
+            <div class="circle">4</div>
+            <span>Review</span>
+        </div>
+    </div>
+
+    <form [formGroup]="eventForm" (ngSubmit)="submitEvent()">
+        <!-- Step 1: Edit -->
+        @if (currentStep === EventStep.Edit) {
+        <section>
+            <h3>Event Details</h3>
+            <div class="form-group">
+                <label>Event Title</label>
+                <input type="text" formControlName="title" placeholder="Enter event name" />
+            </div>
+
+            <div class="form-group">
+                <label>Category</label>
+                <select formControlName="category">
+                    <option value="">Select category</option>
+                    <option>Music</option>
+                    <option>Business</option>
+                    <option>Sports</option>
+                    <option>Education</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Start Date</label>
+                    <input type="date" formControlName="startDate" />
+                </div>
+                <div class="form-group">
+                    <label>Start Time</label>
+                    <input type="time" formControlName="startTime" />
+                </div>
+                <div class="form-group">
+                    <label>End Time</label>
+                    <input type="time" formControlName="endTime" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" formControlName="location" placeholder="Enter location" />
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea rows="4" formControlName="description" placeholder="Describe your event"></textarea>
+            </div>
+        </section>
+        }
+
+        <!-- Step 2: Banner -->
+
+        @if (currentStep === EventStep.Banner) {
+        <section class="banner-upload">
+            <h3>Upload Event Banners</h3>
+
+            <div class="upload-box">
+                <label class="upload-area" for="bannerUpload">
+                    <input id="bannerUpload" type="file" multiple accept="image/*" (change)="onFilesSelected($event)" />
+                    <img src="/assets/gif/upload.gif" alt="Upload Icon" class="upload-icon" />
+                    <p>Click or drag to upload multiple images</p>
+                </label>
+            </div>
+
+            <!-- Image Previews -->
+            @if (imagePreviews.length > 0) {
+            <div class="preview-grid">
+                @for (img of imagePreviews.slice(0, 3); track $index; let i = $index) {
+                <div class="preview">
+                    <img [src]="img" alt="Preview {{ i + 1 }}" />
+                    <button type="button" class="remove" (click)="removeImage(i)">×</button>
+                </div>
+                }
+
+                @if (imagePreviews.length > 3) {
+                <div class="preview more">
+                    <div class="overlay">+{{ imagePreviews.length - 3 }}</div>
+                </div>
+                }
+            </div>
+            }
+
+            <p class="note">You can upload multiple images (JPG, PNG).</p>
+        </section>
+
+        }
+
+
+        <!-- Step 3: Ticketing -->
+        @if (currentStep === EventStep.Ticketing) {
+        <section>
+            <h3>Ticketing</h3>
+            <div class="toggle">
+                <button type="button" [class.active]="eventForm.value.isTicketed"
+                    (click)="eventForm.patchValue({ isTicketed: true })">
+                    Ticketed Event
+                </button>
+                <button type="button" [class.active]="!eventForm.value.isTicketed"
+                    (click)="eventForm.patchValue({ isTicketed: false })">
+                    Free Event
+                </button>
+            </div>
+
+            @if (eventForm.value.isTicketed) {
+            <div class="form-row">
+                <input type="text" formControlName="ticketName" placeholder="Ticket Name" />
+                <input type="number" formControlName="ticketPrice" placeholder="Price" />
+            </div>
+            }
+        </section>
+        }
+
+        <!-- Step 4: Review -->
+        @if (currentStep === EventStep.Review) {
+        <!-- <section>
+            <h3>Review & Publish</h3>
+            <div class="review">
+                <p><strong>Title:</strong> {{ eventForm.value.title }}</p>
+                <p><strong>Category:</strong> {{ eventForm.value.category }}</p>
+                <p><strong>Date:</strong> {{ eventForm.value.startDate }}</p>
+                <p><strong>Location:</strong> {{ eventForm.value.location }}</p>
+                <p><strong>Description:</strong> {{ eventForm.value.description }}</p>
+            </div>
+        </section> -->
+        <div class="review-container">
+
+  <!-- Header -->
+  <h2 class="section-title">Nearly there! Check everything’s correct.</h2>
+
+  <div class="event-preview-card">
+
+    <!-- Banner -->
+    <div class="banner">
+      <img
+        [src]="imagePreviews.length ? imagePreviews[0] : 'assets/images/placeholder-banner.png'"
+        alt="Banner"
+      />
+    </div>
+
+    <!-- Content -->
+    <div class="content-wrapper">
+
+      <h2 class="event-title">{{ eventForm.value.title }}</h2>
+
+      <div class="info-grid">
+
+        <!-- Date & Time -->
+        <div class="info-column">
+          <h3>Date and Time</h3>
+          <p><strong>Day:</strong> {{ eventForm.value.startDate | date:'fullDate' }}</p>
+          <p><strong>Start:</strong> {{ eventForm.value.startTime }}</p>
+          <p><strong>End:</strong> {{ eventForm.value.endTime }}</p>
+          <a class="add-calendar">+ Add to Calendar</a>
+        </div>
+
+        <!-- Ticket Info -->
+        <div class="info-column">
+          <h3>Ticket Information</h3>
+          <p>
+            <strong>Type:</strong>
+            {{ eventForm.value.ticketName || 'Free Event' }}
+          </p>
+          <p *ngIf="eventForm.value.isTicketed">
+            <strong>Price:</strong> ₹{{ eventForm.value.ticketPrice }}
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Location -->
+      <div class="location-section">
+        <h3>Location</h3>
+        <p><strong>Address:</strong> {{ eventForm.value.location }}</p>
+
+        <!-- Map Placeholder -->
+        <div class="map-placeholder">
+          <img src="assets/images/map-placeholder.png" alt="Map" />
+        </div>
+      </div>
+
+      <!-- Hosted By -->
+      <div class="host-section">
+        <h3>Hosted by</h3>
+
+        <div class="host-card">
+          <div class="host-img"></div>
+          <div class="host-details">
+            <p><strong>Host Name</strong></p>
+            <div class="host-buttons">
+              <button class="mini-btn">Contact</button>
+              <button class="mini-btn follow">+ Follow</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="description-section">
+        <h3>Event Description</h3>
+        <p>{{ eventForm.value.description }}</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <!-- <div class="button-row">
+    <button class="btn-secondary">Save for Later</button>
+    <button class="btn-primary">Publish Event</button>
+  </div> -->
+
+</div>
+        }
+
+        <!-- Navigation -->
+        <div class="actions">
+            <button type="button" class="back" (click)="prevStep()" [disabled]="currentStep === 1">Back</button>
+            <button type="button" class="next" *ngIf="currentStep < 4" (click)="nextStep()">
+                Save & Continue
+            </button>
+            <button type="submit" *ngIf="currentStep === 4" class="publish">
+                Publish Event
+            </button>
+        </div>
+    </form>
+</div>

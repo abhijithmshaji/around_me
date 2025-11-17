@@ -1,18 +1,21 @@
-import { Component,OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { User } from '../../../services/user/user';
 import { CategoryCard } from "../../../categoies/category-card/category-card";
+import { EventService } from '../../../services/event/event-service';
+import { EventCard } from "../../../events/event-card/event-card";
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CategoryCard],
+  imports: [CategoryCard, EventCard],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
 export class Dashboard implements OnInit {
 
   public displayName!: string
+  public eventsList: any[] = []
 
-  constructor(private userService: User) {
+  constructor(private userService: User, private eventService: EventService, private cdr: ChangeDetectorRef) {
 
   }
   ngOnInit(): void {
@@ -20,6 +23,13 @@ export class Dashboard implements OnInit {
     if (user) {
       this.displayName = JSON.parse(user).name;
     }
+    this.eventService.getEvents().subscribe({
+      next: (res) => {
+        console.log(res);
+        this.eventsList = res || []
+        this.cdr.detectChanges(); 
+      }
+    })
   }
   selectedCity = 'Mumbai';
   activeTab = 'All';
@@ -34,16 +44,42 @@ export class Dashboard implements OnInit {
     { name: 'Travel & Adventure', image: '/assets/images/cat-travel.png' },
   ];
 
-  events = [
-    { title: 'Lakeside Camping at Pawna', date: 'Nov 25-26', category: 'Travel', location: 'Pawna Lake', price: 1200 },
-    { title: 'Sound of Christmas 2023', date: 'Dec 2', category: 'Culture', location: 'Bandra Fort', price: 500 },
-    { title: 'Global Engineering Education', date: 'Dec 3', category: 'Tech', location: 'BKC, Mumbai', price: 0 },
-  ];
-
   get filteredEvents() {
-    if (this.activeTab === 'Free') return this.events.filter(e => e.price === 0);
-    return this.events;
+    const today = new Date();
+    const tomorrow = new Date();
+    tomorrow.setDate(today.getDate() + 1);
+
+    switch (this.activeTab) {
+
+      // case 'All': return this.eventsList
+
+      case 'Today':
+        return this.eventsList.filter(e => {
+          const eventDate = new Date(e.startDate);
+          return eventDate.toDateString() === today.toDateString();
+        });
+
+      case 'Tomorrow':
+        return this.eventsList.filter(e => {
+          const eventDate = new Date(e.startDate);
+          return eventDate.toDateString() === tomorrow.toDateString();
+        });
+
+      case 'This Weekend':
+        return this.eventsList.filter(e => {
+          const eventDate = new Date(e.startDate);
+          const day = eventDate.getDay(); // 0 = Sun, 6 = Sat
+          return day === 6 || day === 0;
+        });
+
+      case 'Free':
+        return this.eventsList.filter(e => e.isTicketed === false);
+
+      default:
+        return this.eventsList; // "All"
+    }
   }
+
 
   setTab(tab: string) {
     this.activeTab = tab;

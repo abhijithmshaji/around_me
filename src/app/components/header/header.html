@@ -15,18 +15,19 @@
   <!-- Logo -->
   <div class="logo">
     <img src="/assets/images/logo.png" alt="AroundMe Logo" />
-    <h2>Event<span>ify</span></h2>
+    <h2>Aroud<span>Me</span></h2>
   </div>
 
   <!-- Navigation -->
   <nav class="nav-links">
+  @for (item of menuItems; track $index) {
     <a
-      *ngFor="let item of menuItems"
       [routerLink]="item.path"
       routerLinkActive="active"
       [routerLinkActiveOptions]="{ exact: true }"
       >{{ item.label }}</a
     >
+  }
   </nav>
 
   <!-- Right Actions -->

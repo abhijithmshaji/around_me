@@ -1,1 +1,52 @@
-<p>event-card works!</p>
+<div class="event-card">
+
+    <!-- Wishlist Icon -->
+    <button class="wishlist-btn">
+        <i class="fa fa-star-o"></i>
+    </button>
+
+    <!-- Thumbnail -->
+    <div class="event-image">
+        <img [src]="bannerUrl" alt="Event Image" />
+    </div>
+
+    <!-- Card Content -->
+    <div class="event-content">
+
+        <!-- Category Tag -->
+        <span class="category-tag">{{ event.category }}</span>
+
+        <!-- Date Box -->
+        <div class="date-box">
+            <span class="month">{{ event.startMonth }}</span>
+            <span class="date">{{ event.startDay }}</span>
+        </div>
+
+        <!-- Title -->
+        <h3 class="event-title">{{ event.title }}</h3>
+
+        <!-- Location -->
+        <p class="event-location">
+            <i class="fa fa-map-marker"></i> {{ event.location }}
+        </p>
+
+        <!-- Footer -->
+        <div class="event-footer">
+
+            <!-- Price -->
+            @if (event.ticketPrice > 0) {
+            <span class="price">₹ {{ event.ticketPrice }}</span>
+            }@else {
+
+            <span class="price free">FREE</span>
+            }
+
+            <!-- Views -->
+            <span class="views">
+                <i class="fa fa-eye"></i> {{ event.views }} interested
+            </span>
+
+        </div>
+
+    </div>
+</div>
