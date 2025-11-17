@@ -18,8 +18,8 @@
 
         <!-- Date Box -->
         <div class="date-box">
-            <span class="month">{{ event.startMonth }}</span>
-            <span class="date">{{ event.startDay }}</span>
+            <span class="month">{{ event.startDate | date:'MMM' }}</span>
+            <span class="date">{{ event.startDate | date:'dd' }}</span>
         </div>
 
         <!-- Title -->

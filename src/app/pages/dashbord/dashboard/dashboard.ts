@@ -73,6 +73,8 @@ export class Dashboard implements OnInit {
         });
 
       case 'Free':
+        console.log(this.eventsList.filter(e => e.isTicketed === false));
+        
         return this.eventsList.filter(e => e.isTicketed === false);
 
       default:
