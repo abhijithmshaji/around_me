@@ -32,4 +32,28 @@ export class User {
     this.displayName.set('');
   }
 
+  public addToWishlist(eventId: string): Observable<any> {
+    const token = localStorage.getItem("token");
+
+    return this.http.post(
+      `${this.baseUrl}users/wishlist/${eventId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+  }
+
+  public removeFromWishlist(eventId: string) {
+    const token = localStorage.getItem("token");
+
+    return this.http.delete(`${this.baseUrl}users/wishlist/${eventId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  }
+
 }

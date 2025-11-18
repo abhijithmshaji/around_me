@@ -1,0 +1,262 @@
+/* user-profile.component.scss */
+
+/* Simple theme tokens */
+$bg: #f7f7f9;
+$card: #ffffff;
+$muted: #6b6b6b;
+$accent: #4a4ae8;
+$error: #e74c3c;
+$border: #e6e6e6;
+$radius: 10px;
+$gap: 50px;
+
+:host {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    color: #222;
+}
+
+/* Page wrapper */
+.profile-wrapper {
+    display: flex;
+    gap: 30px;
+    padding: 24px;
+    background: $bg;
+    box-sizing: border-box;
+    align-items: flex-start;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 230px;
+    background: $card;
+    padding: 20px;
+    border-radius: $radius;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+    box-sizing: border-box;
+
+    h3 {
+        margin: 0 0 12px 0;
+        font-size: 16px;
+        color: #111;
+    }
+
+    ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+
+        li {
+            padding: 10px 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: $muted;
+            transition: background 0.15s, color 0.15s;
+
+            &.active {
+                background: rgba($accent, 0.08);
+                color: $accent;
+                font-weight: 600;
+            }
+
+            &:hover:not(.active) {
+                background: #fafafa;
+                color: #333;
+            }
+        }
+    }
+}
+
+/* Main content */
+.profile-content {
+    flex: 1;
+    background: $card;
+    padding: 24px;
+    border-radius: $radius;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+    box-sizing: border-box;
+
+    h2 {
+        margin: 0 0 18px 0;
+        font-size: 20px;
+    }
+}
+
+/* Profile photo */
+.profile-photo-section {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.photo-box {
+    position: relative;
+    width: 140px;
+    height: 140px;
+}
+
+.photo-box img,
+.photo-box .placeholder {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #eee;
+}
+
+/* Camera Button - OUTSIDE bottom-right */
+.upload-btn {
+    position: absolute;
+    bottom: -10px; /* moves icon BELOW the circle */
+    right: -10px; /* moves icon OUTSIDE the circle */
+    background: white;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 2px solid #e0e0e0;
+    box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+}
+
+/* Hide input */
+.upload-btn input {
+    display: none;
+}
+
+.upload-btn fa-icon {
+    font-size: 18px;
+    color: #555;
+}
+
+/* Form layout */
+.form {
+    margin-top: 8px;
+
+    h3 {
+        margin: 18px 0 12px 0;
+        font-size: 16px;
+        color: #111;
+    }
+
+    .form-row {
+        display: flex;
+        gap: $gap;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+    }
+
+    .form-group {
+        flex: 1;
+        min-width: 180px;
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 12px;
+
+        &.full {
+            flex: 100%;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 13px;
+            color: #333;
+        }
+
+        input,
+        textarea,
+        select {
+            padding: 10px 12px;
+            border: 1px solid $border;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: box-shadow 0.12s, border-color 0.12s;
+            background: #fff;
+
+            &:focus {
+                border-color: $accent;
+                box-shadow: 0 4px 14px rgba(74, 74, 232, 0.08);
+            }
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+    }
+
+    .error {
+        color: #e63946;
+        font-size: 12px;
+        margin-top: 4px;
+        display: block;
+
+        small {
+            color: $error;
+            font-size: 12px;
+            display: block;
+        }
+    }
+}
+
+/* Buttons */
+.save-btn {
+    margin-top: 14px;
+    background: $accent;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 8px 18px rgba(74, 74, 232, 0.14);
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .profile-wrapper {
+        padding: 16px;
+        gap: 16px;
+    }
+
+    .sidebar {
+        display: none;
+    }
+
+    .form .form-row {
+        gap: 10px;
+    }
+
+    .profile-photo-section {
+        flex-direction: row;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-content {
+        padding: 14px;
+    }
+
+    .profile-photo-section .photo-box {
+        width: 88px;
+        height: 88px;
+    }
+
+    .form .form-row {
+        flex-direction: column;
+    }
+}

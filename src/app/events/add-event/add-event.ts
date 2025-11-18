@@ -2,6 +2,8 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
 import { EventService } from '../../services/event/event-service';
+import { Router } from '@angular/router';
+import { EventLocationPicker } from "../../common/event-location-picker/event-location-picker/event-location-picker";
 
 enum EventStep {
   Edit = 1,
@@ -12,18 +14,29 @@ enum EventStep {
 
 @Component({
   selector: 'app-add-event',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, EventLocationPicker],
   templateUrl: './add-event.html',
   styleUrl: './add-event.scss'
 })
-export class AddEvent implements OnInit{
-  EventStep = EventStep; // expose enum for template
-  currentStep = EventStep.Edit;
-  imagePreviews: string[] = [];
+export class AddEvent implements OnInit {
+  public EventStep = EventStep; // expose enum for template
+  public currentStep = EventStep.Edit;
+  public imagePreviews: string[] = [];
 
-  eventForm: FormGroup;
+  public eventForm: FormGroup;
+  public pickedLocation: any = null;
+  public hostName!: string;
 
-  constructor(private fb: FormBuilder, private cdr: ChangeDetectorRef, private eventService: EventService) {
+  public selectedLocation!: {
+    lat: number;
+    lng: number;
+    address: string;
+  };
+
+  constructor(private fb: FormBuilder,
+    private cdr: ChangeDetectorRef,
+    private eventService: EventService,
+    private router: Router) {
     this.eventForm = this.fb.group({
       // Step 1: Event Details
       title: ['', Validators.required],
@@ -32,39 +45,38 @@ export class AddEvent implements OnInit{
       startTime: ['', Validators.required],
       endTime: ['', Validators.required],
       location: ['', Validators.required],
+      lat: [''],
+      lng: [''],
       description: [''],
 
-      // Step 2: Banner
       banners: this.fb.array([]),
 
-      // Step 3: Ticketing
       isTicketed: [true],
       ticketName: [''],
       ticketPrice: ['']
     });
   }
   ngOnInit(): void {
-    
+    const user = localStorage.getItem('user');
+    this.hostName = user ? JSON.parse(user).name : '';
   }
-
-  // convenience getter
   get banners(): FormArray {
     return this.eventForm.get('banners') as FormArray;
   }
 
-  nextStep() {
+  public nextStep() {
     if (this.currentStep < EventStep.Review) {
       this.currentStep++;
     }
   }
 
-  prevStep() {
+  public prevStep() {
     if (this.currentStep > EventStep.Edit) {
       this.currentStep--;
     }
   }
 
-  onFilesSelected(event: Event): void {
+  public onFilesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (!input.files?.length) return;
 
@@ -74,30 +86,25 @@ export class AddEvent implements OnInit{
       const reader = new FileReader();
       reader.onload = (e: any) => {
         this.imagePreviews.push(e.target.result);
-        this.cdr.detectChanges(); // ✅ force Angular to update the DOM
+        this.cdr.detectChanges();
       };
       reader.readAsDataURL(file);
 
       this.banners.push(this.fb.control(file));
     });
 
-    // reset file input to allow re-selecting same image if needed
     input.value = '';
   }
-
-  // ✅ remove image from FormArray + preview
-  removeImage(index: number): void {
+  public removeImage(index: number): void {
     this.banners.removeAt(index);
     this.imagePreviews.splice(index, 1);
   }
+  public submitEvent(): void {
+    console.log(this.eventForm);
 
-  // optional: for debugging
-  submitEvent(): void {
     if (this.eventForm.invalid) return;
 
     const formData = new FormData();
-
-    // ✅ Step 1: Append all text fields
     formData.append('title', this.eventForm.value.title);
     formData.append('category', this.eventForm.value.category);
     formData.append('startDate', this.eventForm.value.startDate);
@@ -109,7 +116,6 @@ export class AddEvent implements OnInit{
     formData.append('ticketName', this.eventForm.value.ticketName);
     formData.append('ticketPrice', this.eventForm.value.ticketPrice);
 
-    // ✅ Step 2: Append all files under the SAME field name 'banners'
     this.banners.controls.forEach((control) => {
       const file = control.value;
       if (file instanceof File) {
@@ -117,11 +123,64 @@ export class AddEvent implements OnInit{
       }
     });
 
-    // ✅ Step 3: Send FormData (not JSON)
     this.eventService.addEvents(formData).subscribe({
-      next: (res) => console.log('Event created:', res),
+      next: (res) => {
+        console.log('Event created:', res)
+        this.router.navigate(['/filter-event'])
+      },
+      complete: () => {
+        this.eventForm.reset()
+      },
       error: (err) => console.error('Error creating event:', err)
     });
+  }
+
+  public onLocationPicked(loc: any) {
+    this.eventForm.patchValue({
+      location: loc.address
+    });
+  }
+
+  // searchAddress(event: any) {
+  //   const query = event.target.value;
+
+  //   if (query.length < 3) return;
+
+  //   fetch(`https://nominatim.openstreetmap.org/search?format=json&countrycodes=in&q=${query}`)
+  //     .then(res => res.json())
+  //     .then(results => {
+  //       if (results.length > 0) {
+  //         const place = results[0];
+
+  //         // Set map marker via child component
+  //         this.onLocationPicked({
+  //           lat: place.lat,
+  //           lng: place.lon,
+  //           address: place.display_name
+  //         });
+  //       }
+  //     });
+  // }
+
+
+  onSearchTyping(event: any) {
+    const query = event.target.value;
+
+    if (query.length < 3) return;
+
+    fetch(`https://nominatim.openstreetmap.org/search?format=json&countrycodes=in&q=${query}`)
+      .then(res => res.json())
+      .then(results => {
+        if (results.length === 0) return;
+
+        const place = results[0];
+
+        this.onLocationPicked({
+          lat: Number(place.lat),
+          lng: Number(place.lon),
+          address: place.display_name
+        });
+      });
   }
 
 

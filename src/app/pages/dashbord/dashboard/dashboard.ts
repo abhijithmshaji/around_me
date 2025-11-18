@@ -23,13 +23,20 @@ export class Dashboard implements OnInit {
     if (user) {
       this.displayName = JSON.parse(user).name;
     }
+
     this.eventService.getEvents().subscribe({
       next: (res) => {
-        console.log(res);
-        this.eventsList = res || []
-        this.cdr.detectChanges(); 
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        this.eventsList = (res || []).filter((event: any) => {
+          const eventDate = new Date(event.startDate);
+          eventDate.setHours(0, 0, 0, 0);
+          return eventDate >= today;
+        });
+        this.cdr.detectChanges();
       }
-    })
+    });
   }
   selectedCity = 'Mumbai';
   activeTab = 'All';
@@ -74,7 +81,7 @@ export class Dashboard implements OnInit {
 
       case 'Free':
         console.log(this.eventsList.filter(e => e.isTicketed === false));
-        
+
         return this.eventsList.filter(e => e.isTicketed === false);
 
       default:

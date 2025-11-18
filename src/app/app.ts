@@ -22,7 +22,7 @@ export class App {
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         // Hide header/footer if user is on login route
-        this.showLayout = !(event.urlAfterRedirects === '/' || event.urlAfterRedirects === '/register');
+        this.showLayout = !(event.urlAfterRedirects === '/login' || event.urlAfterRedirects === '/register');
       });
   }
 }

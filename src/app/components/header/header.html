@@ -1,16 +1,4 @@
-<!-- <mat-toolbar>
-  <button matIconButton class="example-icon" aria-label="Example icon-button with menu icon">
-    <mat-icon>menu</mat-icon>
-  </button>
-  <span>Around Me</span>
-  <span class="example-spacer"></span>
-  <button matIconButton class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
-    <mat-icon>user</mat-icon>
-  </button>
-  <button  class="logout-btn" (click)="logout()">
-  <span>Logout</span>
-</button>
-</mat-toolbar> -->
+
 <header class="navbar">
   <!-- Logo -->
   <div class="logo">
@@ -32,8 +20,13 @@
 
   <!-- Right Actions -->
   <div class="auth-buttons">
-    <a routerLink="/create-event" class="create-event">Create Event</a>
-    <a routerLink="/login" class="login">Login</a>
+    <a routerLink="/add-event" class="create-event">Create Event</a>
+    <a (click)="logout()" class="login">{{isLoggedIn?'Logout':'Login'}}</a>
+    @if (!isLoggedIn) {
     <a routerLink="/register" class="signup">Sign Up</a>
+    }@else {
+      <fa-icon [icon]="faProfile" size="lg"></fa-icon>
+    }
+
   </div>
 </header>

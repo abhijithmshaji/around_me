@@ -30,7 +30,7 @@ export class Login {
           localStorage.setItem('user', JSON.stringify(res.user))
           this.userService.displayName.set(res.user.name);
           console.log('Logged in as:', this.userService.displayName());
-          this.router.navigate(['/home']);
+          this.router.navigate(['/filter-event']);
 
         }
       })

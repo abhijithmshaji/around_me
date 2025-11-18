@@ -1,8 +1,9 @@
 <div class="event-card">
 
     <!-- Wishlist Icon -->
-    <button class="wishlist-btn">
-        <i class="fa fa-star-o"></i>
+    <button class="wishlist-btn" (click)="toggleWishlist()">
+        <fa-icon [icon]="isWishlisted ? faStarFilled : faStar"
+            [ngStyle]="{ color: isWishlisted ? 'red' : '#888' }"></fa-icon>
     </button>
 
     <!-- Thumbnail -->
@@ -27,7 +28,8 @@
 
         <!-- Location -->
         <p class="event-location">
-            <i class="fa fa-map-marker"></i> {{ event.location }}
+            <fa-icon [icon]="faLocation"></fa-icon>
+            {{ shorten(event.location, 25) }}
         </p>
 
         <!-- Footer -->

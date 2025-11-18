@@ -1,0 +1,75 @@
+<div class="filter-page">
+
+    <!-- Left Sidebar Filters -->
+    <aside class="filters">
+        <h3>Filters</h3>
+
+        <div class="filter-section">
+            <h4>Price</h4>
+            <label><input type="radio" name="price" (change)="selectedPrice='Free'; applyFilters()"> Free</label>
+            <label><input type="radio" name="price" (change)="selectedPrice='Paid'; applyFilters()"> Paid</label>
+        </div>
+
+        <div class="filter-section">
+            <h4>Date</h4>
+
+            <label>
+                <input type="radio" name="date" (change)="setDateFilter('Today')"> Today
+            </label>
+
+            <label>
+                <input type="radio" name="date" (change)="setDateFilter('Tomorrow')"> Tomorrow
+            </label>
+
+            <label>
+                <input type="radio" name="date" (change)="setDateFilter('Weekend')"> This Weekend
+            </label>
+
+            <!-- Custom date option -->
+            <label>
+                <input type="radio" name="date" (change)="setDateFilter('Custom')">
+                Select a date
+            </label>
+
+            <!-- Date picker shown only when Custom is selected -->
+             @if (selectedDate === 'Custom') {
+            <input type="date" class="date-picker"
+                (change)="onCustomDateSelected($event)" />
+             }
+        </div>
+
+
+        <div class="filter-section">
+            <h4>Category</h4>
+            <label><input type="radio" name="category" (change)="selectedCategory='Music'; applyFilters()">
+                Music</label>
+            <label><input type="radio" name="category" (change)="selectedCategory='Sports'; applyFilters()">
+                Sports</label>
+            <label><input type="radio" name="category" (change)="selectedCategory='Education'; applyFilters()">
+                Education</label>
+            <label><input type="radio" name="category" (change)="selectedCategory='Business'; applyFilters()">
+                Business</label>
+        </div>
+    </aside>
+
+    <!-- Events List -->
+    <section class="results">
+        <div class="top-bar">
+            <span>{{ filteredEvents.length }} events found</span>
+
+            <select [(ngModel)]="sortBy" (change)="applyFilters()">
+                <option>Relevance</option>
+                <option>Latest</option>
+                <option>Price Low to High</option>
+                <option>Price High to Low</option>
+            </select>
+        </div>
+
+        <div class="event-grid">
+            @for (e of filteredEvents; track $index) {
+            <app-event-card [event]="e"></app-event-card>
+            }
+        </div>
+    </section>
+
+</div>

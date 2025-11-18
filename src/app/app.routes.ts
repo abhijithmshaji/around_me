@@ -5,19 +5,27 @@ import { Register } from './pages/register/register';
 import { Admin } from './pages/admin/admin';
 import { authGuard } from './core/auth-guard';
 import { AddEvent } from './events/add-event/add-event';
+import { EventsFilter } from './events/events-filter/events-filter/events-filter';
+import { UserProfile } from './pages/user/user-profile/user-profile';
 
 export const routes: Routes = [
     {
-        path: '', component: Login,
+        path: '', component: Dashboard, 
     },
     {
-        path: 'home', component: Dashboard, canActivate: [authGuard]
+        path: 'login', component: Login,
     },
     {
         path: 'register', component: Register
     },
     {
         path: 'add-event', component: AddEvent
+    },
+    {
+        path: 'filter-event', component: EventsFilter, canActivate:[authGuard]
+    },
+    {
+        path: 'profile', component: UserProfile, canActivate:[authGuard]
     },
     {
         path: 'admin', component: Admin

@@ -1,0 +1,26 @@
+<h3>Select Event Location</h3>
+
+<!-- <div class="search-container">
+    <input type="text" placeholder="Search for a place..." (input)="onSearchChange($event)" [(ngModel)]="searchQuery" />
+
+    @if (searchResults.length > 0) {
+    <ul class="search-results">
+        @for (r of searchResults; track $index) {
+        <li (click)="selectSearchResult(r)">
+            {{ r.display_name }}
+        </li>
+        }
+    </ul>
+    }
+</div> -->
+
+<div id="map"></div>
+@if (selectedLocation) {
+<div class="coords" >
+    <p>
+        📍 <strong>Address:</strong> {{ selectedLocation.address }} <br />
+        📍 <strong>Lat:</strong> {{ selectedLocation.lat }} <br />
+        📍 <strong>Lng:</strong> {{ selectedLocation.lng }}
+    </p>
+</div>
+}

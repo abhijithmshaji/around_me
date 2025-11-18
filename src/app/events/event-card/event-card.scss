@@ -13,24 +13,28 @@
   }
 
   .wishlist-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: #ffffffbf;
-    border: none;
-    border-radius: 50%;
-    width: 34px;
-    height: 34px;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
 
-    i {
-      font-size: 18px;
-      color: #ff4444;
-    }
+  i {
+    font-size: 18px;
+    transition: 0.2s ease-in-out;
   }
+
+  &:hover i {
+    transform: scale(1.2);
+  }
+}
 
   .event-image {
     width: 100%;

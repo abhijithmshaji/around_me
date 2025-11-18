@@ -1,0 +1,156 @@
+<div class="profile-wrapper">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h3>Account Settings</h3>
+        <ul>
+            <li class="active">Account Info</li>
+            <li>Change Email</li>
+            <li>Password</li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="profile-content">
+
+        <h2>Account Information</h2>
+
+        <!-- Profile Photo -->
+        <div class="profile-photo-section">
+            <div class="photo-box">
+                @if (profileImage) {
+                <img [src]="profileImage" alt="Profile" />
+                }@else {
+                <div class="placeholder"></div>
+                }
+                <label class="upload-btn">
+                    <fa-icon [icon]="faCamera"></fa-icon>
+                    <input type="file" accept="image/*" (change)="onPhotoSelected($event)" />
+                </label>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="form">
+
+            <h3>Profile Information</h3>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>First Name</label>
+                    <input formControlName="firstName">
+
+                    @if (profileForm.controls['firstName'].touched && profileForm.controls['firstName'].invalid) {
+                    <small class="error">
+                        @if (profileForm.controls['firstName'].errors?.['required']) { First name is required. }
+                        @if (profileForm.controls['firstName'].errors?.['minlength']) { Minimum 2 characters required. }
+                    </small>
+                    }
+                </div>
+
+                <div class="form-group">
+                    <label>Last Name</label>
+                    <input formControlName="lastName">
+
+                    @if (profileForm.controls['lastName'].touched && profileForm.controls['lastName'].invalid) {
+                    <small class="error">
+                        @if (profileForm.controls['lastName'].errors?.['required']) { Last name is required. }
+                        @if (profileForm.controls['lastName'].errors?.['minlength']) { Minimum 2 characters required. }
+                    </small>
+                    }
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Website</label>
+                    <input formControlName="website">
+
+                    @if (profileForm.controls['website'].touched && profileForm.controls['website'].invalid) {
+                    <small class="error">
+                        @if (profileForm.controls['website'].errors?.['pattern']) { Enter a valid URL. }
+                    </small>
+                    }
+                </div>
+
+                <div class="form-group">
+                    <label>Company</label>
+                    <input formControlName="company">
+
+                    @if (profileForm.controls['company'].touched && profileForm.controls['company'].invalid) {
+                    <small class="error">
+                        @if (profileForm.controls['company'].errors?.['minlength']) { Minimum 3 characters required. }
+                    </small>
+                    }
+                </div>
+            </div>
+
+
+            <h3>Contact Details</h3>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input formControlName="phone">
+
+                    @if (profileForm.controls['phone'].touched && profileForm.controls['phone'].invalid) {
+                    <small class="error">
+                        @if (profileForm.controls['phone'].errors?.['required']) { Phone number is required. }
+                        @if (profileForm.controls['phone'].errors?.['pattern']) { Enter a valid 10-digit phone number. }
+                    </small>
+                    }
+                </div>
+
+                <div class="form-group">
+                    <label>Address</label>
+                    <input formControlName="address">
+
+                    @if (profileForm.controls['address'].touched && profileForm.controls['address'].invalid) {
+                    <small class="error">
+                        @if (profileForm.controls['address'].errors?.['required']) { Address is required. }
+                    </small>
+                    }
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>City/Town</label>
+                    <input formControlName="city">
+
+                    @if (profileForm.controls['city'].touched && profileForm.controls['city'].invalid) {
+                    <small class="error">
+                        @if (profileForm.controls['city'].errors?.['required']) { City is required. }
+                    </small>
+                    }
+                </div>
+
+                <div class="form-group">
+                    <label>Country</label>
+                    <input formControlName="country">
+
+                    @if (profileForm.controls['country'].touched && profileForm.controls['country'].invalid) {
+                    <small class="error">
+                        @if (profileForm.controls['country'].errors?.['required']) { Country is required. }
+                    </small>
+                    }
+                </div>
+
+                <div class="form-group">
+                    <label>Pincode</label>
+                    <input formControlName="pincode">
+
+                    @if (profileForm.controls['pincode'].touched && profileForm.controls['pincode'].invalid) {
+                    <small class="error">
+                        @if (profileForm.controls['pincode'].errors?.['required']) { Pincode is required. }
+                        @if (profileForm.controls['pincode'].errors?.['pattern']) { Enter a valid 6-digit pincode. }
+                    </small>
+                    }
+                </div>
+            </div>
+
+            <button type="submit" class="save-btn">Save My Profile</button>
+        </form>
+
+    </div>
+</div>
