@@ -1,4 +1,3 @@
-
 <header class="navbar">
   <!-- Logo -->
   <div class="logo">
@@ -8,14 +7,10 @@
 
   <!-- Navigation -->
   <nav class="nav-links">
-  @for (item of menuItems; track $index) {
-    <a
-      [routerLink]="item.path"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{ exact: true }"
-      >{{ item.label }}</a
-    >
-  }
+    @for (item of menuItems; track $index) {
+    <a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ item.label
+      }}</a>
+    }
   </nav>
 
   <!-- Right Actions -->
@@ -25,7 +20,13 @@
     @if (!isLoggedIn) {
     <a routerLink="/register" class="signup">Sign Up</a>
     }@else {
-      <fa-icon [icon]="faProfile" size="lg"></fa-icon>
+    @if (profileImage) {
+    <!-- Show Profile Image -->
+    <img [src]="profileImage" alt="Profile" class="nav-profile-img" />
+    } @else {
+    <!-- Show Icon -->
+    <fa-icon [icon]="faProfile" size="lg" class="nav-profile-icon" routerLink="/profile"></fa-icon>
+    }
     }
 
   </div>

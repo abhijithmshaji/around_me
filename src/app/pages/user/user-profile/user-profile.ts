@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faCamera } from '@fortawesome/free-solid-svg-icons';
+import { User } from '../../../services/user/user';
 
 @Component({
   selector: 'app-user-profile',
@@ -10,18 +11,20 @@ import { faCamera } from '@fortawesome/free-solid-svg-icons';
   templateUrl: './user-profile.html',
   styleUrls: ['./user-profile.scss']
 })
-export class UserProfile {
+export class UserProfile implements OnInit {
 
   public faCamera = faCamera;
   public profileImage: string | ArrayBuffer | null = null;
+  public selectedFile: File | null = null;
 
   public profileForm: FormGroup;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private userService: User) {
+
     this.profileForm = this.fb.group({
 
       firstName: ['', [Validators.required, Validators.minLength(2)]],
-      lastName: ['', [Validators.required, Validators.minLength(2)]],
+      lastName: ['',],
 
       website: ['', [
         Validators.pattern(/^(https?:\/\/)?([\w\-])+\.{1}[a-zA-Z]{2,}([\/\w\-.]*)*\/?$/)
@@ -31,42 +34,96 @@ export class UserProfile {
 
       phone: ['', [
         Validators.required,
-        Validators.pattern(/^[6-9]\d{9}$/) // Indian phone validation
+        Validators.pattern(/^[1-9]\d{9}$/)
       ]],
 
       address: ['', [Validators.required, Validators.minLength(5)]],
 
-      city: ['', [Validators.required]],
-      country: ['', [Validators.required]],
+      city: ['', Validators.required],
+      country: ['', Validators.required],
+
       pincode: ['', [
         Validators.required,
-        Validators.pattern(/^\d{6}$/) // Indian pincode
-      ]]
-
+        Validators.pattern(/^\d{6}$/)
+      ]],
+      profileImage: ['']
     });
   }
 
-  // Profile Image Upload
-  public onPhotoSelected(event: any) {
-    const file = event.target.files[0];
-    if (!file) return;
+  ngOnInit() {
+    const userData = JSON.parse(localStorage.getItem("user") || "{}");
 
-    const reader = new FileReader();
-    reader.onload = () => (this.profileImage = reader.result);
-    reader.readAsDataURL(file);
-  }
+    // Split full name
+    const fullName = userData.name || "";
+    const parts = fullName.trim().split(" ");
 
-  public saveProfile() {
-    if (this.profileForm.invalid) {
-      this.profileForm.markAllAsTouched();
-      return;
+    let first = "";
+    let last = "";
+
+    if (parts.length === 1) {
+      first = parts[0];
+    } else if (parts.length >= 2) {
+      first = parts[0];
+      last = parts.slice(1).join(" ");
     }
 
-    console.log("Profile Saved:", this.profileForm.value);
-    alert("Profile saved successfully!");
+    // Patch values to form
+    this.profileForm.patchValue({
+      firstName: first,
+      lastName: last,
+      phone: userData.phone || "",
+      address: userData.address || "",
+      city: userData.city || "",
+      country: userData.country || "",
+      pincode: userData.pincode || "",
+      website: userData.website || "",
+      company: userData.company || "",
+    });
+
+    // Load existing profile image
+    if (userData.profileImage) {
+      this.profileImage = userData.profileImage;
+    }
   }
 
-  // Utility to get form fields easily in template
+  // Image Upload
+  public onPhotoSelected(event: any) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  this.selectedFile = file; // store file
+
+  const reader = new FileReader();
+  reader.onload = () => this.profileImage = reader.result;
+  reader.readAsDataURL(file);
+}
+
+  public saveProfile() {
+  if (this.profileForm.invalid) {
+    this.profileForm.markAllAsTouched();
+    return;
+  }
+
+  const formData = new FormData();
+
+  Object.keys(this.profileForm.value).forEach(key => {
+    formData.append(key, this.profileForm.value[key]);
+  });
+
+  if (this.selectedFile) {
+    formData.append("profileImage", this.selectedFile);
+  }
+
+  this.userService.updateProfile(formData).subscribe({
+    next: (res:any) => {
+      alert("Profile updated successfully!");
+      localStorage.setItem("user", JSON.stringify(res.user));
+    },
+    error: (err) => console.log(err)
+  });
+}
+
+
   get f() {
     return this.profileForm.controls;
   }

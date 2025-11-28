@@ -67,7 +67,7 @@
 
         <div class="event-grid">
             @for (e of filteredEvents; track $index) {
-            <app-event-card [event]="e"></app-event-card>
+            <app-event-card [event]="e" (wishlistChanged)="onWishlistChanged($event)"></app-event-card>
             }
         </div>
     </section>

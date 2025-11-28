@@ -1,5 +1,5 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons';
@@ -15,14 +15,15 @@ import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 })
 export class EventCard implements OnInit, OnChanges {
   @Input() event!: any
+  @Output() wishlistChanged = new EventEmitter<{ eventId: string, isWishlisted: boolean }>();
   public bannerUrl!: string
   public faStar = faStarRegular;
   public faStarFilled = faStarSolid;
-  public isWishlisted: boolean = false;
   public faLocation = faMapMarkerAlt;
 
   constructor(private router: Router, private userService: User) { }
   ngOnInit() {
+
   }
   ngOnChanges(changes: SimpleChanges) {
     if (changes['event']) {
@@ -41,26 +42,65 @@ export class EventCard implements OnInit, OnChanges {
   }
 
   public toggleWishlist() {
-    const user = localStorage.getItem('user');
-
-    if (!user) {
+    const userData = localStorage.getItem('user');
+    if (!userData) {
       this.router.navigate(['/login']);
       return;
-    } else {
-      this.isWishlisted = !this.isWishlisted;
-      if (this.isWishlisted) {
-        this.userService.addToWishlist(this.event._id).subscribe({
-          next: (res) => { console.log(res); }
+    }
 
-        });
-      } else {
-        this.userService.removeFromWishlist(this.event._id).subscribe();
-      }
+    const user = JSON.parse(userData);
+    let wishlist: string[] = [];
+
+    if (Array.isArray(user.wishlist)) {
+      wishlist = Array.isArray(user.wishlist[0]) ? user.wishlist[0] : user.wishlist;
+    }
+
+    const eventId = this.event?._id;
+    if (!eventId) return;
+
+    // ADD
+    if (!this.event.isWishlisted) {
+      this.userService.addToWishlist(eventId).subscribe({
+        next: () => {
+          this.event.isWishlisted = true;
+
+          if (!wishlist.includes(eventId)) {
+            wishlist.push(eventId);
+          }
+
+          user.wishlist = wishlist;
+          localStorage.setItem("user", JSON.stringify(user));
+
+          // 🔥 Notify parent
+          this.wishlistChanged.emit({ eventId, isWishlisted: true });
+        }
+      });
+    }
+
+    // REMOVE
+    else {
+      this.userService.removeFromWishlist(eventId).subscribe({
+        next: () => {
+          this.event.isWishlisted = false;
+
+          wishlist = wishlist.filter(id => id !== eventId);
+          user.wishlist = wishlist;
+          localStorage.setItem("user", JSON.stringify(user));
+
+          // 🔥 Notify parent
+          this.wishlistChanged.emit({ eventId, isWishlisted: false });
+        }
+      });
     }
   }
+
+
+
+
   public shorten(text: string, limit: number = 20): string {
-  if (!text) return '';
-  return text.length > limit ? text.substring(0, limit) + '...' : text;
-}
+    if (!text) return '';
+    return text.length > limit ? text.substring(0, limit) + '...' : text;
+  }
+
 
 }

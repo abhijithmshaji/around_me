@@ -12,34 +12,103 @@ import { EventCard } from "../../../events/event-card/event-card";
 })
 export class Dashboard implements OnInit {
 
-  public displayName!: string
-  public eventsList: any[] = []
+  public eventsList: any[] = [];
+  public filteredEvents: any[] = [];
 
-  constructor(private userService: User, private eventService: EventService, private cdr: ChangeDetectorRef) {
+  constructor(
+    private userService: User,
+    private eventService: EventService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
+  ngOnInit() {
+    this.loadEvents();
   }
-  ngOnInit(): void {
-    const user = localStorage.getItem('user');
-    if (user) {
-      this.displayName = JSON.parse(user).name;
+
+  // 🚀 Load events + wishlist properly
+  private loadEvents() {
+    const localUser = JSON.parse(localStorage.getItem("user") || "{}");
+
+    if (!localUser.id) {
+      // User not logged in → load events normally
+      this.loadEventsWithoutWishlist();
+      return;
     }
 
+    // 1️⃣ Fetch user with wishlist
+    this.userService.getUserById(localUser.id).subscribe({
+      next: (userRes: any) => {
+        const rawList = userRes.user.wishlist || [];
+
+        const wishlist: string[] = Array.isArray(rawList[0]) ? rawList[0] : rawList;
+
+        // 2️⃣ Load events and apply wishlist flags
+        this.loadEventsWithWishlist(wishlist);
+      }
+    });
+  }
+
+  public onWishlistChanged(data: { eventId: string; isWishlisted: boolean }) {
+
+  // Update the main list
+  this.eventsList = this.eventsList.map(event =>
+    event._id === data.eventId
+      ? { ...event, isWishlisted: data.isWishlisted }
+      : event
+  );
+
+  // Update the filtered list
+  this.filteredEvents = this.filteredEvents.map(event =>
+    event._id === data.eventId
+      ? { ...event, isWishlisted: data.isWishlisted }
+      : event
+  );
+}
+
+
+  // 🚀 Case: User not logged in
+  private loadEventsWithoutWishlist() {
+    this.eventService.getEvents().subscribe(res => {
+      this.eventsList = res || [];
+      this.filteredEvents = [...this.eventsList];
+      this.cdr.detectChanges();
+    });
+  }
+
+  // 🚀 Case: User logged in (wishlist applied)
+  private loadEventsWithWishlist(wishlist: string[]) {
     this.eventService.getEvents().subscribe({
-      next: (res) => {
+      next: (res: any[]) => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        this.eventsList = (res || []).filter((event: any) => {
+        // Filter only future events
+        let events = (res || []).filter(event => {
           const eventDate = new Date(event.startDate);
           eventDate.setHours(0, 0, 0, 0);
           return eventDate >= today;
         });
+
+        // ⭐ Mark wishlisted events
+        events = events.map(event => ({
+          ...event,
+          isWishlisted: wishlist.includes(event._id)
+        }));
+
+        this.eventsList = events;
+        this.filteredEvents = [...events];
         this.cdr.detectChanges();
       }
     });
   }
+
+  // ------------------------------
+  //  UI Filters (Today, Tomorrow…)
+  // ------------------------------
+
   selectedCity = 'Mumbai';
   activeTab = 'All';
+
   tabs = ['All', 'Today', 'Tomorrow', 'This Weekend', 'Free'];
 
   categories = [
@@ -51,44 +120,28 @@ export class Dashboard implements OnInit {
     { name: 'Travel & Adventure', image: '/assets/images/cat-travel.png' },
   ];
 
-  get filteredEvents() {
+  get filteredList() {
     const today = new Date();
     const tomorrow = new Date();
     tomorrow.setDate(today.getDate() + 1);
 
     switch (this.activeTab) {
-
-      // case 'All': return this.eventsList
-
       case 'Today':
-        return this.eventsList.filter(e => {
-          const eventDate = new Date(e.startDate);
-          return eventDate.toDateString() === today.toDateString();
-        });
+        return this.eventsList.filter(e => new Date(e.startDate).toDateString() === today.toDateString());
 
       case 'Tomorrow':
-        return this.eventsList.filter(e => {
-          const eventDate = new Date(e.startDate);
-          return eventDate.toDateString() === tomorrow.toDateString();
-        });
+        return this.eventsList.filter(e => new Date(e.startDate).toDateString() === tomorrow.toDateString());
 
       case 'This Weekend':
-        return this.eventsList.filter(e => {
-          const eventDate = new Date(e.startDate);
-          const day = eventDate.getDay(); // 0 = Sun, 6 = Sat
-          return day === 6 || day === 0;
-        });
+        return this.eventsList.filter(e => [0, 6].includes(new Date(e.startDate).getDay()));
 
       case 'Free':
-        console.log(this.eventsList.filter(e => e.isTicketed === false));
-
         return this.eventsList.filter(e => e.isTicketed === false);
 
       default:
-        return this.eventsList; // "All"
+        return this.eventsList;
     }
   }
-
 
   setTab(tab: string) {
     this.activeTab = tab;

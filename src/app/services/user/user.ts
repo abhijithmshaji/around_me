@@ -56,4 +56,24 @@ export class User {
     });
   }
 
+  public updateProfile(formData: FormData) {
+  const token = localStorage.getItem("token");
+
+  return this.http.put(`${this.baseUrl}users/profile`, formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+public getUserById(id: string) {
+  const token = localStorage.getItem("token");
+
+  return this.http.get(`${this.baseUrl}users/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+}
+
 }

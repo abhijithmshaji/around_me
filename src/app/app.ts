@@ -17,12 +17,15 @@ export class App {
   public showLayout = true;
 
   constructor(private router: Router) {
-    // Watch for route changes
-    this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe((event: NavigationEnd) => {
-        // Hide header/footer if user is on login route
-        this.showLayout = !(event.urlAfterRedirects === '/login' || event.urlAfterRedirects === '/register');
-      });
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        const noLayoutRoutes = ['/login', '/register'];
+
+        // Normalize URL (remove query params)
+        const currentUrl = event.urlAfterRedirects.split('?')[0];
+
+        this.showLayout = !noLayoutRoutes.includes(currentUrl);
+      }
+    });
   }
 }

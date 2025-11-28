@@ -211,6 +211,33 @@ $text-muted: #ccc;
   }
 }
 
+.nav-profile-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover; // ensures the image fills the circle
+  border: 2px solid #fff; // optional for clean look
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+.nav-profile-img:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+.nav-profile-icon {
+  font-size: 28px;
+  color: #333;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+.nav-profile-icon:hover {
+  transform: scale(1.1);
+}
+
+
 /* === Responsive === */
 @media (max-width: 900px) {
   .navbar {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,12 +16,18 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
   styleUrl: './header.scss'
 })
 export class Header implements OnInit{
-
+  private baseUrl = 'http://localhost:5000'; // backend URL
   public isLoggedIn: boolean = false
   public faProfile = faUserCircle;
-  constructor(private router: Router, private authService: Auth) { }
+  public profileImage!:any;
+  constructor(private router: Router, private authService: Auth, private cdr: ChangeDetectorRef) { }
   ngOnInit(): void {
-    this.isLoggedIn = this.authService.isLoggedIn
+    this.isLoggedIn = this.authService.isLoggedIn;
+     const userData = JSON.parse(localStorage.getItem("user") || "{}");
+    if (userData.profileImage) {
+      this.profileImage = this.baseUrl+userData.profileImage;
+    }
+    this.cdr.detectChanges()
   }
 
   logout() {
@@ -31,7 +37,7 @@ export class Header implements OnInit{
   }
   menuItems = [
     { label: 'Home', path: '/' },
-    { label: 'Events', path: '/events' },
+    { label: 'Events', path: '/filter-event' },
     { label: 'About', path: '/about' },
     { label: 'Contact', path: '/contact' }
   ];

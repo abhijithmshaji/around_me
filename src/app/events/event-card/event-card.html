@@ -2,8 +2,8 @@
 
     <!-- Wishlist Icon -->
     <button class="wishlist-btn" (click)="toggleWishlist()">
-        <fa-icon [icon]="isWishlisted ? faStarFilled : faStar"
-            [ngStyle]="{ color: isWishlisted ? 'red' : '#888' }"></fa-icon>
+        <fa-icon [icon]="event.isWishlisted ? faStarFilled : faStar"
+            [ngStyle]="{ color: event.isWishlisted ? 'red' : '#888' }"></fa-icon>
     </button>
 
     <!-- Thumbnail -->

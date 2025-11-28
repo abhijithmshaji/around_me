@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component } from '@angular/core';
 import { EventService } from '../../../services/event/event-service';
 import { EventCard } from "../../event-card/event-card";
 import { FormsModule } from '@angular/forms';
+import { User } from '../../../services/user/user';
 
 @Component({
   selector: 'app-events-filter',
@@ -22,17 +23,79 @@ export class EventsFilter {
 
   public sortBy: string = 'Relevance';
 
-  constructor(private eventService: EventService, private cdr: ChangeDetectorRef) { }
+  constructor(private eventService: EventService, private cdr: ChangeDetectorRef, private userService: User,) { }
 
   ngOnInit() {
-    this.eventService.getEvents().subscribe(res => {
-      this.eventsList = res || [];
-      this.filteredEvents = this.eventsList
-      
-      this.cdr.detectChanges();
-      
+    this.eventService.getEvents().subscribe({
+      next: (eventsRes: any[]) => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        let events = (eventsRes || []).filter(event => {
+          const eventDate = new Date(event.startDate);
+          eventDate.setHours(0, 0, 0, 0);
+          return eventDate >= today;
+        });
+
+        const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+        if (!user?.id) {
+          events = events.map(event => ({ ...event, isWishlisted: false }));
+          this.eventsList = events;
+          this.filteredEvents = [...events];
+          return;
+        }
+        this.userService.getUserById(user.id).subscribe({
+          next: (userRes: any) => {
+            // console.log("User Data from API:", userRes);
+
+            let rawList = userRes.user?.wishlist || [];
+            const wishlist: string[] = Array.isArray(rawList[0]) ? rawList[0] : rawList;
+            // console.log("Final Wishlist:", wishlist);
+            events = events.map(event => ({
+              ...event,
+              isWishlisted: wishlist.includes(event._id.toString())
+            }));
+
+            this.eventsList = events;
+            this.filteredEvents = [...events];
+            // console.log('filterList:',this.filteredEvents);
+            
+            this.cdr.detectChanges();
+          },
+
+          error: (err) => {
+            console.error("Failed to fetch user data:", err);
+          }
+        });
+      },
+
+      error: (err) => {
+        console.error("Failed to load events:", err);
+      }
     });
   }
+
+public onWishlistChanged(data: { eventId: string; isWishlisted: boolean }) {
+
+  // Update the main list
+  this.eventsList = this.eventsList.map(event =>
+    event._id === data.eventId
+      ? { ...event, isWishlisted: data.isWishlisted }
+      : event
+  );
+
+  // Update the filtered list
+  this.filteredEvents = this.filteredEvents.map(event =>
+    event._id === data.eventId
+      ? { ...event, isWishlisted: data.isWishlisted }
+      : event
+  );
+}
+
+
+
+
 
   public setDateFilter(type: string) {
     this.selectedDate = type;
@@ -78,8 +141,6 @@ export class EventsFilter {
 
         if (eventDate !== selected) return false;
       }
-
-      // Category filter
       if (this.selectedCategory && event.category !== this.selectedCategory) return false;
 
       return true;
@@ -99,4 +160,7 @@ export class EventsFilter {
       this.filteredEvents.sort((a, b) => b.ticketPrice - a.ticketPrice);
     }
   }
+
+
+
 }
