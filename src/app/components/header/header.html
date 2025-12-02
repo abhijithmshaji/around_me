@@ -22,7 +22,7 @@
     }@else {
     @if (profileImage) {
     <!-- Show Profile Image -->
-    <img [src]="profileImage" alt="Profile" class="nav-profile-img" />
+    <img [src]="profileImage" alt="Profile" class="nav-profile-img" routerLink="/profile"/>
     } @else {
     <!-- Show Icon -->
     <fa-icon [icon]="faProfile" size="lg" class="nav-profile-icon" routerLink="/profile"></fa-icon>

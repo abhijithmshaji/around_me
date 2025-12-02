@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class User {
   public displayName = signal<string>('')
+  public profileImageSignal = signal<string | null>(null);
   private baseUrl = 'http://localhost:5000/api/'; // backend URL
 
   constructor(private http: HttpClient) {

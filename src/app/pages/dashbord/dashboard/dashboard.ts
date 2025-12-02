@@ -25,7 +25,7 @@ export class Dashboard implements OnInit {
     this.loadEvents();
   }
 
-  // 🚀 Load events + wishlist properly
+  // Load events + wishlist properly
   private loadEvents() {
     const localUser = JSON.parse(localStorage.getItem("user") || "{}");
 
@@ -35,14 +35,14 @@ export class Dashboard implements OnInit {
       return;
     }
 
-    // 1️⃣ Fetch user with wishlist
+    // Fetch user with wishlist
     this.userService.getUserById(localUser.id).subscribe({
       next: (userRes: any) => {
         const rawList = userRes.user.wishlist || [];
 
         const wishlist: string[] = Array.isArray(rawList[0]) ? rawList[0] : rawList;
 
-        // 2️⃣ Load events and apply wishlist flags
+        // Load events and apply wishlist flags
         this.loadEventsWithWishlist(wishlist);
       }
     });
@@ -66,7 +66,7 @@ export class Dashboard implements OnInit {
 }
 
 
-  // 🚀 Case: User not logged in
+  // Case: User not logged in
   private loadEventsWithoutWishlist() {
     this.eventService.getEvents().subscribe(res => {
       this.eventsList = res || [];
@@ -75,7 +75,7 @@ export class Dashboard implements OnInit {
     });
   }
 
-  // 🚀 Case: User logged in (wishlist applied)
+  // Case: User logged in (wishlist applied)
   private loadEventsWithWishlist(wishlist: string[]) {
     this.eventService.getEvents().subscribe({
       next: (res: any[]) => {
@@ -89,7 +89,7 @@ export class Dashboard implements OnInit {
           return eventDate >= today;
         });
 
-        // ⭐ Mark wishlisted events
+        // Mark wishlisted events
         events = events.map(event => ({
           ...event,
           isWishlisted: wishlist.includes(event._id)

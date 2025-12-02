@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faCamera } from '@fortawesome/free-solid-svg-icons';
 import { User } from '../../../services/user/user';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user-profile',
@@ -16,10 +17,10 @@ export class UserProfile implements OnInit {
   public faCamera = faCamera;
   public profileImage: string | ArrayBuffer | null = null;
   public selectedFile: File | null = null;
-
+  public baseUrl = "http://localhost:5000";
   public profileForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private userService: User) {
+  constructor(private fb: FormBuilder, private userService: User, private router: Router) {
 
     this.profileForm = this.fb.group({
 
@@ -53,6 +54,7 @@ export class UserProfile implements OnInit {
   ngOnInit() {
     const userData = JSON.parse(localStorage.getItem("user") || "{}");
 
+
     // Split full name
     const fullName = userData.name || "";
     const parts = fullName.trim().split(" ");
@@ -82,46 +84,65 @@ export class UserProfile implements OnInit {
 
     // Load existing profile image
     if (userData.profileImage) {
-      this.profileImage = userData.profileImage;
+      this.profileImage = userData.profileImage.startsWith("/uploads")
+        ? this.baseUrl + userData.profileImage
+        : userData.profileImage;
     }
   }
 
   // Image Upload
   public onPhotoSelected(event: any) {
-  const file = event.target.files[0];
-  if (!file) return;
+    const file = event.target.files[0];
+    if (!file) return;
 
-  this.selectedFile = file; // store file
+    this.selectedFile = file; // store file for upload API later
 
-  const reader = new FileReader();
-  reader.onload = () => this.profileImage = reader.result;
-  reader.readAsDataURL(file);
-}
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.profileImage = reader.result; // Instant preview
+
+      // Save to localStorage
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      user.previewProfileImage = this.profileImage; // temporary preview
+      localStorage.setItem("user", JSON.stringify(user));
+    };
+    reader.readAsDataURL(file);
+  }
+
 
   public saveProfile() {
-  if (this.profileForm.invalid) {
-    this.profileForm.markAllAsTouched();
-    return;
+    if (this.profileForm.invalid) {
+      this.profileForm.markAllAsTouched();
+      return;
+    }
+
+    const formData = new FormData();
+
+    Object.keys(this.profileForm.value).forEach(key => {
+      formData.append(key, this.profileForm.value[key]);
+    });
+
+    if (this.selectedFile) {
+      formData.append("profileImage", this.selectedFile);
+    }
+
+    this.userService.updateProfile(formData).subscribe({
+      next: (res: any) => {
+        alert("Profile updated successfully!");
+
+        const updatedUser = {
+          ...res.user,
+          profileImage: res.user.profileImage.startsWith("/uploads")
+            ? this.baseUrl + res.user.profileImage
+            : res.user.profileImage
+        };
+        this.userService.profileImageSignal.set(updatedUser.profileImage);
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+        this.router.navigate(['/filter-event'])
+      },
+      error: (err) => console.log(err)
+    });
   }
-
-  const formData = new FormData();
-
-  Object.keys(this.profileForm.value).forEach(key => {
-    formData.append(key, this.profileForm.value[key]);
-  });
-
-  if (this.selectedFile) {
-    formData.append("profileImage", this.selectedFile);
-  }
-
-  this.userService.updateProfile(formData).subscribe({
-    next: (res:any) => {
-      alert("Profile updated successfully!");
-      localStorage.setItem("user", JSON.stringify(res.user));
-    },
-    error: (err) => console.log(err)
-  });
-}
 
 
   get f() {

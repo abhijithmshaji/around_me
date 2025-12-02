@@ -7,20 +7,20 @@ import { User } from '../../services/user/user';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, FormsModule,ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './login.html',
   styleUrl: './login.scss'
 })
 export class Login {
-  
-  public loginForm!:FormGroup
+
+  public loginForm!: FormGroup
 
   constructor(private fb: FormBuilder, private router: Router, private auth: Auth, private userService: User) {
     this.loginForm = this.fb.group({
-       email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
-   }
+  }
 
   public login() {
     if (this.loginForm.valid) {
@@ -30,8 +30,9 @@ export class Login {
           localStorage.setItem('user', JSON.stringify(res.user))
           this.userService.displayName.set(res.user.name);
           console.log('Logged in as:', this.userService.displayName());
-          this.router.navigate(['/filter-event']);
-
+          this.router.navigate(['/filter-event'], { replaceUrl: true });
+          history.pushState(null, '', location.href);
+          window.onpopstate = () => history.go(1);
         }
       })
     } else {
