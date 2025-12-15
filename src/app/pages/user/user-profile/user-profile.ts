@@ -5,10 +5,12 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faCamera } from '@fortawesome/free-solid-svg-icons';
 import { User } from '../../../services/user/user';
 import { Router } from '@angular/router';
+import { ChangeEmail } from "../change-email/change-email";
+import { ChangePassword } from "../change-password/change-password";
 
 @Component({
   selector: 'app-user-profile',
-  imports: [CommonModule, ReactiveFormsModule, FaIconComponent],
+  imports: [CommonModule, ReactiveFormsModule, FaIconComponent, ChangeEmail, ChangePassword],
   templateUrl: './user-profile.html',
   styleUrls: ['./user-profile.scss']
 })
@@ -19,6 +21,9 @@ export class UserProfile implements OnInit {
   public selectedFile: File | null = null;
   public baseUrl = "http://localhost:5000";
   public profileForm: FormGroup;
+  public changeEmail = false;
+  public changePassword = false;
+  public accountInfo = true;
 
   constructor(private fb: FormBuilder, private userService: User, private router: Router) {
 
@@ -149,4 +154,19 @@ export class UserProfile implements OnInit {
     return this.profileForm.controls;
   }
 
+  public onClickChangeAccountInfo(){
+    this.accountInfo = true;
+    this.changeEmail = false;
+    this.changePassword = false;
+  }
+  public onClickChangeEmail() {
+    this.changeEmail = true;
+    this.accountInfo = false;
+    this.changePassword = false;
+  }
+    public onClickChangePassword() {
+      this.changePassword = true;
+    this.changeEmail = false;
+    this.accountInfo = false;
+  }
 }

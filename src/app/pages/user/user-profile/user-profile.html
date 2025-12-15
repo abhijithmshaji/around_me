@@ -4,15 +4,24 @@
     <aside class="sidebar">
         <h3>Account Settings</h3>
         <ul>
-            <li class="active">Account Info</li>
-            <li>Change Email</li>
-            <li>Password</li>
+            <li [ngClass]="accountInfo?'active':''" (click)="onClickChangeAccountInfo()">Account Info</li>
+            <li (click)="onClickChangeEmail()"[ngClass]="changeEmail?'active':''">Change Email</li>
+            <li (click)="onClickChangePassword()" [ngClass]="changePassword?'active':''">Password</li>
         </ul>
     </aside>
 
     <!-- Main Content -->
     <div class="profile-content">
 
+
+        <!-- Email Form -->
+        @if (changeEmail) {
+        <app-change-email></app-change-email>
+        }@else if (changePassword) {
+            <app-change-password></app-change-password>
+        }
+        @else {
+        <!-- Form -->
         <h2>Account Information</h2>
 
         <!-- Profile Photo -->
@@ -29,8 +38,6 @@
                 </label>
             </div>
         </div>
-
-        <!-- Form -->
         <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="form">
 
             <h3>Profile Information</h3>
@@ -151,6 +158,6 @@
 
             <button type="submit" class="save-btn">Save My Profile</button>
         </form>
-
+        }
     </div>
 </div>

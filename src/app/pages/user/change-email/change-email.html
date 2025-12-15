@@ -1,0 +1,70 @@
+<!-- <div class="settings-page"> -->
+  <section class="settings-content">
+    <h2>Change Email</h2>
+
+    <form [formGroup]="emailForm" (ngSubmit)="submit()" class="change-email-form">
+
+      <!-- Current email (readonly) -->
+      <div class="form-row">
+        <label>Current Email</label>
+        <input class="currentEmail" type="email" formControlName="currentEmail" readonly />
+      </div>
+
+      <!-- New email -->
+      <div class="form-row two-col">
+        <div class="input-col">
+          <label>New Email</label>
+          <input class="newEmail" type="email" formControlName="newEmail" placeholder="you@domain.com" />
+          @if (emailForm.controls['newEmail'].touched && emailForm.controls['newEmail'].invalid) {
+            <small class="error" > 
+              @if (emailForm.controls['newEmail'].errors?.['required']) { Enter new email. }
+              @if (emailForm.controls['newEmail'].errors?.['email']) { Enter a valid email. }
+            </small>
+          }
+        </div>
+
+        <div class="input-col">
+          <label>Confirm New Email</label>
+          <input class="newEmail" type="email" formControlName="confirmEmail" placeholder="confirm new email" />
+          @if ((emailForm.touched || emailForm.controls['confirmEmail'].touched) && emailForm.errors?.['emailMismatch']) {
+            <small class="error">Emails do not match.</small>
+          }
+        </div>
+      </div>
+
+      <!-- OTP controls -->
+      <div class="otp-row">
+        @if (!otpSent) {
+          <button type="button"
+                  class="btn btn-secondary"
+                  (click)="sendOtp()"
+                  [disabled]="isSubmitting || emailForm.controls['newEmail'].invalid">
+            @if (isSubmitting) { Sending OTP... } @else { Send OTP to my phone }
+          </button>
+          <p class="hint">OTP will be sent to your registered phone number.</p>
+        } @else {
+          <div class="otp-input">
+            <label>Enter OTP</label>
+            <input type="text" formControlName="otp" placeholder="Enter OTP" />
+            <button type="button" class="btn btn-text" (click)="sendOtp()" [disabled]="isSubmitting">
+              Resend OTP
+            </button>
+          </div>
+        }
+      </div>
+
+      <!-- Action buttons -->
+      <div class="actions">
+        <button type="submit" class="btn btn-primary"
+                [disabled]="isSubmitting || emailForm.invalid || !otpSent">
+          @if (isSubmitting) { Updating... } @else { Update Email }
+        </button>
+
+        <button type="button" class="btn btn-link" (click)="emailForm.reset(); otpSent=false;" [disabled]="isSubmitting">
+          Cancel
+        </button>
+      </div>
+
+    </form>
+  </section>
+<!-- </div> -->

@@ -77,4 +77,15 @@ public getUserById(id: string) {
   });
 }
 
+public sendOtp(phone: string) {
+  return this.http.post(this.baseUrl + "users/send-otp", { phone });
+}
+
+public updateEmail(data: any) {
+  return this.http.post(this.baseUrl + "users/update-email", data);
+}
+
+public updatePassword(data: any) {
+  return this.http.post(this.baseUrl + "users/update-password", data);
+}
 }

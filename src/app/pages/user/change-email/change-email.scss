@@ -1,0 +1,205 @@
+// Layout
+.settings-page {
+  display: flex;
+  gap: 2rem;
+  padding: 2.5rem;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  color: #222;
+  background: #fafafa;
+  min-height: calc(100vh - 120px);
+}
+
+/* Sidebar */
+.settings-sidebar {
+  width: 220px;
+  background: #fff;
+  border-radius: 8px;
+  padding: 1rem 0;
+  box-shadow: 0 6px 20px rgba(12,18,26,0.06);
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    li {
+      padding: 0.9rem 1.25rem;
+      color: #495057;
+      cursor: pointer;
+      font-weight: 600;
+      border-left: 3px solid transparent;
+      &:hover { background: #fbfbfb; }
+      &.active {
+        color: #111;
+        background: #fff;
+        border-left-color: #ffcc00;
+      }
+    }
+  }
+}
+
+/* Content */
+.settings-content {
+  flex: 1;
+  background: #fff;
+  border-radius: 10px;
+  padding: 2.25rem;
+  box-shadow: 0 6px 24px rgba(12,18,26,0.06);
+
+  h2 {
+    margin: 0 0 1.25rem 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .change-email-form {
+    display: block;
+
+    .form-row {
+      margin-bottom: 1rem;
+
+      label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 0.45rem;
+        color: #333;
+      }
+
+      .currentEmail{
+        display: block;
+        width: 95%;
+        padding: 0.7rem 0.9rem;
+        border-radius: 8px;
+        border: 1px solid #e6e6e9;
+        background: #fff;
+        font-size: 0.95rem;
+        transition: border-color .15s ease;
+        &:focus {
+          outline: none;
+          border-color: #cfcfcf;
+          box-shadow: 0 4px 12px rgba(14,20,30,0.03);
+        }
+      }
+      .newEmail{
+        display: block;
+        width: 90%;
+        padding: 0.7rem 0.9rem;
+        border-radius: 8px;
+        border: 1px solid #e6e6e9;
+        background: #fff;
+        font-size: 0.95rem;
+        transition: border-color .15s ease;
+        &:focus {
+          outline: none;
+          border-color: #cfcfcf;
+          box-shadow: 0 4px 12px rgba(14,20,30,0.03);
+        }
+      }
+      input[type="text"] {
+        display: block;
+        width: 90%;
+        padding: 0.7rem 0.9rem;
+        border-radius: 8px;
+        border: 1px solid #e6e6e9;
+        background: #fff;
+        font-size: 0.95rem;
+        transition: border-color .15s ease;
+        &:focus {
+          outline: none;
+          border-color: #cfcfcf;
+          box-shadow: 0 4px 12px rgba(14,20,30,0.03);
+        }
+      }
+
+      &.two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+
+      .input-col { position: relative; }
+
+      small.error {
+        color: #d63939;
+        display: block;
+        margin-top: 0.4rem;
+        font-size: 0.82rem;
+      }
+    }
+
+    .otp-row {
+      margin: 1rem 0 1.5rem;
+      .hint {
+        margin-top: 0.6rem;
+        color: #6b7280;
+        font-size: 0.9rem;
+      }
+      .otp-input {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+
+        input {
+          width: 160px;
+        }
+
+        .btn-text {
+          background: transparent;
+          border: none;
+          color: #2563eb;
+          cursor: pointer;
+          padding: 0;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .actions {
+      margin-top: 1.25rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+
+      .btn {
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.95rem;
+      }
+
+      .btn-primary {
+        background: #3b57f0;
+        border: none;
+        color: white;
+        box-shadow: 0 6px 18px rgba(255,204,0,0.12);
+      }
+
+      .btn-secondary {
+        background: #fff;
+        border: 1px solid #e6e6e9;
+        color: #111;
+      }
+
+      .btn-link {
+        background: transparent;
+        border: none;
+        color: #6b7280;
+        font-weight: 600;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+/* Responsive */
+@media (max-width: 880px) {
+  .settings-page {
+    flex-direction: column;
+    padding: 1rem;
+  }
+  .settings-sidebar { width: 100%; order: 2; }
+  .settings-content { order: 1; padding: 1rem; }
+  .change-email-form .form-row.two-col {
+    grid-template-columns: 1fr;
+  }
+}
