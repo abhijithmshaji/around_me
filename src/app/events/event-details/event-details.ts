@@ -4,10 +4,11 @@ import { faShareAlt, faMapMarkerAlt, faTicketAlt } from '@fortawesome/free-solid
 import { FaIconComponent } from "@fortawesome/angular-fontawesome";
 import { ActivatedRoute, Route } from '@angular/router';
 import { EventService } from '../../services/event/event-service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-event-details',
-  imports: [FaIconComponent],
+  imports: [FaIconComponent, DatePipe],
   templateUrl: './event-details.html',
   styleUrl: './event-details.scss'
 })
@@ -26,6 +27,9 @@ export class EventDetails implements OnInit{
   constructor(private route:ActivatedRoute, private eventService:EventService, private cdr: ChangeDetectorRef){}
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    console.log(user);
+    
     this.eventService.getEventById(id).subscribe({
       next:(res)=>{
         this.event = res;
