@@ -9,7 +9,7 @@
   <div class="event-header">
     <div class="title-section">
       <h1>{{ event?.title || 'Event Title' }}</h1>
-       <!-- <h1>Event Title</h1> -->
+      <!-- <h1>Event Title</h1> -->
 
       <div class="action-icons">
         <fa-icon [icon]="faStar" class="icon"></fa-icon>
@@ -25,12 +25,16 @@
     <h3>Date and Time</h3>
     <div class="info-row">
       <fa-icon [icon]="faCalendar"></fa-icon>
-      <span>{{ event.startDate | date:'dd MMM yyyy'  }}</span>
+      <span>{{ event?.startDate | date:'dd MMM yyyy' }}</span>
     </div>
 
     <div class="info-row">
       <fa-icon [icon]="faClock"></fa-icon>
-      <span>{{ ('1970-01-01T' + event.startTime) | date:'hh:mm a' }}</span>
+      @if (event?.startTime) {
+      <span>{{ to12Hour(event.startTime) }}</span>
+      } @else {
+      <span>—</span>
+      }
     </div>
 
     <a class="calendar-link">+ Add to Calendar</a>
@@ -41,13 +45,11 @@
     <h3>Location</h3>
     <div class="info-row">
       <fa-icon [icon]="faMapMarker"></fa-icon>
-      <!-- <span>{{ event?.location }}</span> -->
-       <span>Loacation</span>
+      <span>{{ shortAddress(event?.location || '') }}</span>
+      
     </div>
-
-    <div class="map-box">
-      <!-- Replace with Leaflet/Google Map -->
-      <img src="assets/images/map-placeholder.png" alt="Map" />
+    <div class="event-map-container">
+      <div id="event-map"></div>
     </div>
   </section>
 
@@ -86,4 +88,3 @@
   </section>
 
 </div>
-
