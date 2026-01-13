@@ -86,23 +86,23 @@ export class ChangePassword implements OnInit {
       return;
     }
 
-    try {
+    // try {
       // 1️⃣ First send OTP
-      await this.sendOtp();
+      // await this.sendOtp();
 
       // 2️⃣ Ask user for OTP
-      const otp = prompt("Enter the OTP sent to your phone");
+      // const otp = prompt("Enter the OTP sent to your phone");
 
-      if (!otp) {
-        alert("OTP verification cancelled.");
-        return;
-      }
+      // if (!otp) {
+      //   alert("OTP verification cancelled.");
+      //   return;
+      // }
 
       const payload = {
         currentPassword: this.passwordForm.value.currentPassword,
         newPassword: this.passwordForm.value.newPassword,
-        otp,
-        otpId: this.serverOtpId
+        // otp,
+        // otpId: this.serverOtpId
       };
 
       // 3️⃣ Submit password change request
@@ -116,10 +116,10 @@ export class ChangePassword implements OnInit {
         }
       });
 
-    } catch (error) {
-      console.error(error);
-      alert("Failed to send OTP");
-    }
+    // } catch (error) {
+    //   console.error(error);
+    //   alert("Failed to send OTP");
+    // }
   }
 
   public cancel() {

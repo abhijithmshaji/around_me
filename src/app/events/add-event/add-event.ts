@@ -26,6 +26,7 @@ export class AddEvent implements OnInit {
   public eventForm: FormGroup;
   public pickedLocation: any = null;
   public hostName!: string;
+  public hostImage!: any;
 
   public selectedLocation!: {
     lat: number;
@@ -59,6 +60,8 @@ export class AddEvent implements OnInit {
   ngOnInit(): void {
     const user = localStorage.getItem('user');
     this.hostName = user ? JSON.parse(user).name : '';
+    const hostImg = user ? JSON.parse(user).profileImage : '';
+    this.hostImage = 'http://localhost:5000'+ hostImg
   }
   get banners(): FormArray {
     return this.eventForm.get('banners') as FormArray;

@@ -71,7 +71,7 @@ export class EventCard implements OnInit, OnChanges {
           user.wishlist = wishlist;
           localStorage.setItem("user", JSON.stringify(user));
 
-          // 🔥 Notify parent
+          // Notify parent
           this.wishlistChanged.emit({ eventId, isWishlisted: true });
         }
       });
@@ -87,7 +87,7 @@ export class EventCard implements OnInit, OnChanges {
           user.wishlist = wishlist;
           localStorage.setItem("user", JSON.stringify(user));
 
-          // 🔥 Notify parent
+          // Notify parent
           this.wishlistChanged.emit({ eventId, isWishlisted: false });
         }
       });
@@ -102,5 +102,8 @@ export class EventCard implements OnInit, OnChanges {
     return text.length > limit ? text.substring(0, limit) + '...' : text;
   }
 
+  public viewDetails(){
+    this.router.navigate(['/event-details',this.event._id])
+  }
 
 }

@@ -7,7 +7,7 @@
       <!-- Current email (readonly) -->
       <div class="form-row">
         <label>Current Email</label>
-        <input class="currentEmail" type="email" formControlName="currentEmail" readonly />
+        <input class="currentEmail" type="email" formControlName="currentEmail"  />
       </div>
 
       <!-- New email -->
@@ -33,7 +33,7 @@
       </div>
 
       <!-- OTP controls -->
-      <div class="otp-row">
+      <!-- <div class="otp-row">
         @if (!otpSent) {
           <button type="button"
                   class="btn btn-secondary"
@@ -51,12 +51,12 @@
             </button>
           </div>
         }
-      </div>
+      </div> -->
 
       <!-- Action buttons -->
       <div class="actions">
         <button type="submit" class="btn btn-primary"
-                [disabled]="isSubmitting || emailForm.invalid || !otpSent">
+                [disabled]="isSubmitting || emailForm.invalid ">
           @if (isSubmitting) { Updating... } @else { Update Email }
         </button>
 

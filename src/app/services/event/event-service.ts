@@ -17,4 +17,7 @@ export class EventService {
   public addEvents(formData:any):Observable<any>{
     return this.http.post(`${this.baseUrl}events/create`, formData);
   }
+  public getEventById(id:string | null):Observable<any>{
+    return this.http.get(`${this.baseUrl}events/${id}`)
+  }
 }

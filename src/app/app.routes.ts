@@ -7,6 +7,7 @@ import { authGuard } from './core/auth-guard';
 import { AddEvent } from './events/add-event/add-event';
 import { EventsFilter } from './events/events-filter/events-filter/events-filter';
 import { UserProfile } from './pages/user/user-profile/user-profile';
+import { EventDetails } from './events/event-details/event-details';
 
 export const routes: Routes = [
     {
@@ -20,6 +21,9 @@ export const routes: Routes = [
     },
     {
         path: 'add-event', component: AddEvent
+    },
+    {
+        path: 'event-details/:id', component: EventDetails
     },
     {
         path: 'filter-event', component: EventsFilter, canActivate:[authGuard]

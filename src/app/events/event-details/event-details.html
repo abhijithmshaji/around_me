@@ -1,0 +1,92 @@
+<div class="event-details-container">
+
+  <!-- Banner -->
+  <div class="banner">
+    <img [src]="eventBanner || 'assets/images/placeholder-banner.png'" alt="Event Banner" />
+  </div>
+
+  <!-- Event Header -->
+  <div class="event-header">
+    <div class="title-section">
+      <h1>{{ event?.title || 'Event Title' }}</h1>
+       <!-- <h1>Event Title</h1> -->
+
+      <div class="action-icons">
+        <fa-icon [icon]="faStar" class="icon"></fa-icon>
+        <fa-icon [icon]="faShare" class="icon"></fa-icon>
+      </div>
+    </div>
+
+    <button class="buy-btn">Buy Tickets</button>
+  </div>
+
+  <!-- Date & Time -->
+  <section class="info-section">
+    <h3>Date and Time</h3>
+    <div class="info-row">
+      <fa-icon [icon]="faCalendar"></fa-icon>
+      <span>{{ event.startDate }}</span>
+    </div>
+
+    <div class="info-row">
+      <fa-icon [icon]="faClock"></fa-icon>
+      <span>{{ event.startTime }}</span>
+    </div>
+
+    <a class="calendar-link">+ Add to Calendar</a>
+  </section>
+
+  <!-- Location -->
+  <section class="info-section">
+    <h3>Location</h3>
+    <div class="info-row">
+      <fa-icon [icon]="faMapMarker"></fa-icon>
+      <!-- <span>{{ event?.location }}</span> -->
+       <span>Loacation</span>
+    </div>
+
+    <div class="map-box">
+      <!-- Replace with Leaflet/Google Map -->
+      <img src="assets/images/map-placeholder.png" alt="Map" />
+    </div>
+  </section>
+
+  <!-- Ticket Information -->
+  <section class="info-section">
+    <h3>Ticket Information</h3>
+    <div class="info-row">
+      <fa-icon [icon]="faTicket"></fa-icon>
+      <span>Ticket Type: {{ event?.isTicketed ? ('₹' + event.ticketPrice) : 'Free' }}</span>
+    </div>
+  </section>
+
+  <!-- Host Section -->
+  <section class="info-section">
+    <h3>Hosted by</h3>
+
+    <div class="host-box">
+      <div class="host-avatar"></div>
+
+      <div class="host-info">
+        <!-- <p class="host-name">{{ event?.hostName || 'Host Name' }}</p> -->
+                <p class="host-name">Host Name</p>
+
+
+        <div class="host-buttons">
+          <button class="btn-small">Contact</button>
+          <button class="btn-small outline">Follow</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Description -->
+  <section class="info-section">
+    <h3>Event Description</h3>
+    <p class="description">
+      {{ event?.description }}
+    </p>
+  </section>
+
+</div>
+

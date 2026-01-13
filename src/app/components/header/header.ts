@@ -25,6 +25,8 @@ export class Header implements OnInit {
     effect(() => {
       const newImg = this.userService.profileImageSignal();
       if (newImg) this.profileImage = newImg;
+      console.log(newImg);
+      
     });
   }
   ngOnInit(): void {
@@ -39,6 +41,7 @@ export class Header implements OnInit {
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    this.userService.profileImageSignal.set('') ;
     this.router.navigate(['/login']);
   }
   menuItems = [

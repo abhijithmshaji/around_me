@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
@@ -25,7 +25,7 @@ export class UserProfile implements OnInit {
   public changePassword = false;
   public accountInfo = true;
 
-  constructor(private fb: FormBuilder, private userService: User, private router: Router) {
+  constructor(private fb: FormBuilder, private userService: User, private router: Router, private cdr: ChangeDetectorRef) {
 
     this.profileForm = this.fb.group({
 
@@ -105,7 +105,7 @@ export class UserProfile implements OnInit {
     const reader = new FileReader();
     reader.onload = () => {
       this.profileImage = reader.result; // Instant preview
-
+      this.cdr.detectChanges()
       // Save to localStorage
       const user = JSON.parse(localStorage.getItem("user") || "{}");
       user.previewProfileImage = this.profileImage; // temporary preview
@@ -134,15 +134,21 @@ export class UserProfile implements OnInit {
     this.userService.updateProfile(formData).subscribe({
       next: (res: any) => {
         alert("Profile updated successfully!");
+        console.log(res.user);
+        const finalImageUrl = res.user.profileImage?.startsWith("/uploads")
+          ? this.baseUrl + res.user.profileImage
+          : res.user.profileImage;
+
+        this.userService.profileImageSignal.set(finalImageUrl);
 
         const updatedUser = {
           ...res.user,
-          profileImage: res.user.profileImage.startsWith("/uploads")
-            ? this.baseUrl + res.user.profileImage
-            : res.user.profileImage
+          profileImage: finalImageUrl
         };
-        this.userService.profileImageSignal.set(updatedUser.profileImage);
+
         localStorage.setItem("user", JSON.stringify(updatedUser));
+        debugger
+
         this.router.navigate(['/filter-event'])
       },
       error: (err) => console.log(err)
@@ -154,7 +160,7 @@ export class UserProfile implements OnInit {
     return this.profileForm.controls;
   }
 
-  public onClickChangeAccountInfo(){
+  public onClickChangeAccountInfo() {
     this.accountInfo = true;
     this.changeEmail = false;
     this.changePassword = false;
@@ -164,8 +170,8 @@ export class UserProfile implements OnInit {
     this.accountInfo = false;
     this.changePassword = false;
   }
-    public onClickChangePassword() {
-      this.changePassword = true;
+  public onClickChangePassword() {
+    this.changePassword = true;
     this.changeEmail = false;
     this.accountInfo = false;
   }

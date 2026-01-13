@@ -14,12 +14,13 @@ export class Dashboard implements OnInit {
 
   public eventsList: any[] = [];
   public filteredEvents: any[] = [];
+  public cities: string[] = [];
 
   constructor(
     private userService: User,
     private eventService: EventService,
     private cdr: ChangeDetectorRef
-  ) { }
+  ) { } 
 
   ngOnInit() {
     this.loadEvents();
@@ -120,28 +121,44 @@ export class Dashboard implements OnInit {
     { name: 'Travel & Adventure', image: '/assets/images/cat-travel.png' },
   ];
 
-  get filteredList() {
-    const today = new Date();
-    const tomorrow = new Date();
-    tomorrow.setDate(today.getDate() + 1);
+ get filteredList() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-    switch (this.activeTab) {
-      case 'Today':
-        return this.eventsList.filter(e => new Date(e.startDate).toDateString() === today.toDateString());
+  // Remove past events BEFORE applying tab filter
+  const upcomingEvents = this.eventsList.filter(e => {
+    const eventDate = new Date(e.startDate);
+    eventDate.setHours(0, 0, 0, 0);
+    return eventDate >= today;
+  });
 
-      case 'Tomorrow':
-        return this.eventsList.filter(e => new Date(e.startDate).toDateString() === tomorrow.toDateString());
+  const tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
 
-      case 'This Weekend':
-        return this.eventsList.filter(e => [0, 6].includes(new Date(e.startDate).getDay()));
+  switch (this.activeTab) {
+    case 'Today':
+      return upcomingEvents.filter(e =>
+        new Date(e.startDate).toDateString() === today.toDateString()
+      );
 
-      case 'Free':
-        return this.eventsList.filter(e => e.isTicketed === false);
+    case 'Tomorrow':
+      return upcomingEvents.filter(e =>
+        new Date(e.startDate).toDateString() === tomorrow.toDateString()
+      );
 
-      default:
-        return this.eventsList;
-    }
+    case 'This Weekend':
+      return upcomingEvents.filter(e =>
+        [0, 6].includes(new Date(e.startDate).getDay())
+      );
+
+    case 'Free':
+      return upcomingEvents.filter(e => e.isTicketed === false);
+
+    default:
+      return upcomingEvents;
   }
+}
+
 
   setTab(tab: string) {
     this.activeTab = tab;

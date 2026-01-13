@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { QuickStats } from './quick-stats';
+import { EventDetails } from './event-details';
 
-describe('QuickStats', () => {
-  let component: QuickStats;
-  let fixture: ComponentFixture<QuickStats>;
+describe('EventDetails', () => {
+  let component: EventDetails;
+  let fixture: ComponentFixture<EventDetails>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [QuickStats]
+      imports: [EventDetails]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(QuickStats);
+    fixture = TestBed.createComponent(EventDetails);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

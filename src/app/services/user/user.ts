@@ -11,6 +11,7 @@ export class User {
   private baseUrl = 'http://localhost:5000/api/'; // backend URL
 
   constructor(private http: HttpClient) {
+    this.restoreProfileImage()
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       const parsed = JSON.parse(storedUser);
@@ -18,6 +19,19 @@ export class User {
     }
   }
 
+  private restoreProfileImage() {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+    if (user?.profileImage) {
+      const baseUrl = 'http://localhost:5000';
+
+      const imageUrl = user.profileImage.startsWith('/uploads')
+        ? baseUrl + user.profileImage
+        : user.profileImage;
+
+      this.profileImageSignal.set(imageUrl);
+    }
+  }
   public getUsers(): Observable<any> {
     return this.http.get(`${this.baseUrl}users`);
   }

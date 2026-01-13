@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
 import { User } from '../../../services/user/user';
 
@@ -15,7 +15,7 @@ export class ChangeEmail {
   public serverOtpId = '';      // OTP verification ID from backend
   public isSubmitting = false;  // disable buttons during API actions
 
-  constructor(private fb: FormBuilder, private userService: User) {
+  constructor(private fb: FormBuilder, private userService: User, private cdr: ChangeDetectorRef) {
 
     this.emailForm = this.fb.group(
       {
@@ -50,62 +50,61 @@ export class ChangeEmail {
   // -------------------------------------------------------------
   // SEND OTP TO USER PHONE NUMBER
   // -------------------------------------------------------------
-  sendOtp() {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
+  // sendOtp() {
+  //   const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-    if (!user.phone) {
-      alert("Phone number missing. Please update profile before using OTP verification.");
-      return;
-    }
+  //   if (!user.phone) {
+  //     alert("Phone number missing. Please update profile before using OTP verification.");
+  //     return;
+  //   }
 
-    this.isSubmitting = true;
+  //   this.isSubmitting = true;
 
-    this.userService.sendOtp(user.phone).subscribe({
-      next: (res: any) => {
-        this.otpSent = true;
+  //   this.userService.sendOtp(user.phone).subscribe({
+  //     next: (res: any) => {
+  //       this.otpSent = true;
 
-        // If backend returns an OTP verification id, store it
-        if (res?.otpId) {
-          this.serverOtpId = res.otpId;
-        }
+  //       // If backend returns an OTP verification id, store it
+  //       if (res?.otpId) {
+  //         this.serverOtpId = res.otpId;
+  //       }
 
-        this.isSubmitting = false;
-        alert("OTP sent to your mobile number");
-      },
-      error: () => {
-        this.isSubmitting = false;
-        alert("Failed to send OTP. Try again.");
-      }
-    });
-  }
+  //       this.isSubmitting = false;
+  //       alert("OTP sent to your mobile number");
+  //     },
+  //     error: () => {
+  //       this.isSubmitting = false;
+  //       alert("Failed to send OTP. Try again.");
+  //     }
+  //   });
+  // }
 
   // -------------------------------------------------------------
   // SUBMIT EMAIL CHANGE REQUEST
   // -------------------------------------------------------------
-  submit() {
+  public submit() {
     if (this.emailForm.invalid) {
       this.emailForm.markAllAsTouched();
       return;
     }
 
-    if (!this.otpSent) {
-      alert("Please verify using OTP before continuing.");
-      return;
-    }
+    // if (!this.otpSent) {
+    //   alert("Please verify using OTP before continuing.");
+    //   return;
+    // }
 
     const payload = {
       newEmail: this.emailForm.getRawValue().newEmail,
-      otp: this.emailForm.value.otp,
-      otpId: this.serverOtpId   // optional, depends on backend
+      // otp: this.emailForm.value.otp,
+      // otpId: this.serverOtpId   // optional, depends on backend
     };
 
     this.isSubmitting = true;
-
     this.userService.updateEmail(payload).subscribe({
       next: (res: any) => {
         this.isSubmitting = false;
-
         alert("Email updated successfully!");
+        this.cdr.detectChanges()
 
         if (res?.user) {
           localStorage.setItem('user', JSON.stringify(res.user));
@@ -117,5 +116,6 @@ export class ChangeEmail {
         alert("Failed to update email.");
       }
     });
+    // this.emailForm.reset()
   }
 }
