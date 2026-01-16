@@ -26,13 +26,19 @@ export class Header implements OnInit {
       const newImg = this.userService.profileImageSignal();
       if (newImg) this.profileImage = newImg;
       console.log(newImg);
-      
+
     });
   }
   ngOnInit(): void {
     this.isLoggedIn = this.authService.isLoggedIn;
     const user = JSON.parse(localStorage.getItem("user") || "{}");
-    this.profileImage = this.baseUrl+ user.profileImage || null;
+    if (user.profileImage) {
+      this.profileImage = user.profileImage.startsWith('/uploads')
+        ? this.baseUrl + user.profileImage
+        : user.profileImage;
+    } else {
+      this.profileImage = ''; // no image → show icon
+    }
 
 
     this.cdr.detectChanges()
@@ -41,7 +47,7 @@ export class Header implements OnInit {
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    this.userService.profileImageSignal.set('') ;
+    this.userService.profileImageSignal.set('');
     this.router.navigate(['/login']);
   }
   menuItems = [

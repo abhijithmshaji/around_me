@@ -20,13 +20,12 @@
     @if (!isLoggedIn) {
     <a routerLink="/register" class="signup">Sign Up</a>
     }@else {
-    @if (profileImage) {
-    <!-- Show Profile Image -->
-    <img [src]="profileImage" alt="Profile" class="nav-profile-img" routerLink="/profile"/>
+    @if (profileImage && profileImage !== '') {
+    <img [src]="profileImage" alt="Profile" class="nav-profile-img" routerLink="/profile" />
     } @else {
-    <!-- Show Icon -->
-    <fa-icon [icon]="faProfile" size="lg" class="nav-profile-icon" routerLink="/profile"></fa-icon>
-    }
+    <fa-icon [icon]="faProfile" size="lg" class="nav-profile-icon" routerLink="/profile">
+    </fa-icon>
+    } 
     }
 
   </div>

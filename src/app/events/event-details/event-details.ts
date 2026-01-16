@@ -2,19 +2,21 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { faStar, faCalendarAlt, faClock } from '@fortawesome/free-regular-svg-icons';
 import { faShareAlt, faMapMarkerAlt, faTicketAlt } from '@fortawesome/free-solid-svg-icons';
 import { FaIconComponent } from "@fortawesome/angular-fontawesome";
-import { ActivatedRoute, Route } from '@angular/router';
+import { ActivatedRoute, Route, Router } from '@angular/router';
 import { EventService } from '../../services/event/event-service';
 import { DatePipe } from '@angular/common';
 import * as L from 'leaflet';
+import { User } from '../../services/user/user';
+import { EventBooking } from "../event-booking/event-booking";
 
 @Component({
   selector: 'app-event-details',
-  imports: [FaIconComponent, DatePipe],
+  imports: [FaIconComponent, DatePipe, EventBooking],
   templateUrl: './event-details.html',
   styleUrl: './event-details.scss'
 })
 export class EventDetails implements OnInit {
-  private baseUrl = 'http://localhost:5000'
+  public baseUrl = 'http://localhost:5000'
   public faStar = faStar;
   public faShare = faShareAlt;
   public faCalendar = faCalendarAlt;
@@ -24,36 +26,62 @@ export class EventDetails implements OnInit {
   public event: any
   public eventBanner = ''
   private map: L.Map | null = null;
+  public hostData!: any
 
 
-  constructor(private route: ActivatedRoute, private eventService: EventService, private cdr: ChangeDetectorRef) { }
-  ngOnInit(): void {
+  constructor(private route: ActivatedRoute, private eventService: EventService,
+    private cdr: ChangeDetectorRef, private userService: User,private router: Router) { }
+  ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
-    console.log(user);
+
+    if (!id) {
+      console.error("No event ID found in route!");
+      return;
+    }
 
     this.eventService.getEventById(id).subscribe({
       next: (res) => {
         this.event = res;
-        this.eventBanner = this.baseUrl + this.event.banners[0].url
+
+        // FIX: Handle banner safely
+        if (this.event?.banners?.length > 0) {
+          this.eventBanner = this.baseUrl + this.event.banners[0].url;
+        } else {
+          this.eventBanner = "assets/images/placeholder-banner.png";
+        }
+
+        // FIX: Handle host safely
+        let hostId = null;
+
+        if (typeof this.event.host === "string") {
+          hostId = this.event.host;
+        } else if (typeof this.event.host === "object") {
+          hostId = this.event.host._id;
+        }
+
+        if (hostId) {
+          this.userService.getUserById(hostId).subscribe({
+            next: (hostRes: any) => {
+              this.hostData = hostRes.user;
+              console.log("Host:", this.hostData); 
+              this.cdr.detectChanges();
+            },
+            error: (err) => console.error("Failed to load host:", err)
+          });
+        }
+
+        // FIX: Initialize map ONLY if address exists
         if (this.event?.location) {
           this.showMapFromAddress(this.event.location);
         }
-        this.cdr.detectChanges()
-        console.log(this.event);
 
-      }
-    })
+        this.cdr.detectChanges();
+      },
+
+      error: (err) => console.error("Failed to load event:", err)
+    });
   }
 
-  // ngAfterViewInit() {
-  //   // Try map load after UI renders
-  //   setTimeout(() => {
-  //     if (this.event?.location) {
-  //       this.loadMapFromAddress(this.event.location);
-  //     }
-  //   }, 100);
-  // }
   public async showMapFromAddress(address: string) {
     const results = await fetch(
       `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`
@@ -91,45 +119,58 @@ export class EventDetails implements OnInit {
     });
   }
 
+
   public shortAddress(fullAddress: string): string {
-  if (!fullAddress) return '';
+    if (!fullAddress) return '';
 
-  const parts = fullAddress.split(',').map(p => p.trim());
+    const parts = fullAddress.split(',').map(p => p.trim());
 
-  // Example extraction logic:
-  // [..., "Fort Kochi", "Kochi", "Ernakulam", "Kerala", "682001", "India"]
-
-  let city = '';
-  let state = '';
-
-  // Try to detect city
-  for (let p of parts) {
-    if (
-      !p.match(/\d/) && // skip numbers like pincode
-      p !== 'India' &&
-      p.length > 3
-    ) {
-      city = p;
-      break;
+    // Find state (usually 2nd last non-number part)
+    let state = '';
+    for (let i = parts.length - 1; i >= 0; i--) {
+      if (!/^\d+$/.test(parts[i]) && parts[i] !== 'India') {
+        state = parts[i];
+        break;
+      }
     }
+
+    // Find locality (the meaningful part just before district)
+    let locality = '';
+    for (let i = parts.length - 1; i >= 0; i--) {
+      if (
+        parts[i] !== state &&
+        !/^\d+$/.test(parts[i]) &&
+        !['India', 'Ernakulam', 'Kerala'].includes(parts[i]) &&
+        parts[i].length > 3
+      ) {
+        locality = parts[i];
+        break;
+      }
+    }
+
+    // Fix case: "Kochi" appears twice → prefer "Fort Kochi"
+    if (parts.includes('Fort Kochi')) {
+      locality = 'Fort Kochi';
+    }
+
+    if (locality && state) return `${locality}, ${state}`;
+    return state || locality || fullAddress;
   }
 
-  // Last meaningful part before pincode and "India"
-  for (let i = parts.length - 1; i >= 0; i--) {
-    if (
-      !parts[i].match(/\d/) &&
-      parts[i] !== 'India' &&
-      parts[i].length > 3
-    ) {
-      state = parts[i];
-      break;
-    }
+  public showBooking = false;
+
+  public bookEvent() {
+    this.showBooking = true;
+    setTimeout(() => {
+      if (this.map) {
+        this.map.invalidateSize();
+      }
+    }, 300);
   }
 
-  if (city && state) return `${city}, ${state}`;
-  if (city) return city;
-
-  return fullAddress; // fallback
-}
+  public handleBooking(data: any) {
+    console.log("Booking completed:", data);
+    this.showBooking = false;
+  }
 
 }

@@ -17,7 +17,7 @@
       </div>
     </div>
 
-    <button class="buy-btn">Buy Tickets</button>
+    <button class="buy-btn" (click)="bookEvent()">Buy Tickets</button>
   </div>
 
   <!-- Date & Time -->
@@ -46,9 +46,9 @@
     <div class="info-row">
       <fa-icon [icon]="faMapMarker"></fa-icon>
       <span>{{ shortAddress(event?.location || '') }}</span>
-      
+
     </div>
-    <div class="event-map-container">
+    <div class="map-wrapper">
       <div id="event-map"></div>
     </div>
   </section>
@@ -58,7 +58,7 @@
     <h3>Ticket Information</h3>
     <div class="info-row">
       <fa-icon [icon]="faTicket"></fa-icon>
-      <span>{{ event?.isTicketed ? ('₹' + event.ticketPrice) : 'Free' }}</span>
+      <span>{{ event?.isTicketed ? ('₹' + event?.ticketPrice) : 'Free' }}</span>
     </div>
   </section>
 
@@ -67,12 +67,14 @@
     <h3>Hosted by</h3>
 
     <div class="host-box">
-      <div class="host-avatar"></div>
+      <div class="host-avatar"><img class="host-img"
+          [src]="hostData?.profileImage ? baseUrl + hostData.profileImage : ''">
+      </div>
 
       <div class="host-info">
-        <!-- <p class="host-name">{{ event?.hostName || 'Host Name' }}</p> -->
+        <p class="host-name">{{ hostData?.name|| 'Host Name' }}</p>
         <div class="host-buttons">
-          <button class="btn-small">Contact</button>
+          <button class="btn-small">{{hostData?.phone || 'Contact'}}</button>
           <button class="btn-small outline">Follow</button>
         </div>
       </div>
@@ -88,3 +90,8 @@
   </section>
 
 </div>
+@if (showBooking) {
+<app-event-booking [event]="event" [ticketPrice]="event.ticketPrice" (closed)="showBooking = false"
+  (bookingCompleted)="handleBooking($event)">
+</app-event-booking>
+}

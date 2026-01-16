@@ -26,6 +26,7 @@ export class AddEvent implements OnInit {
   public eventForm: FormGroup;
   public pickedLocation: any = null;
   public hostName!: string;
+  public hostId!: string;
   public hostImage!: any;
 
   public selectedLocation!: {
@@ -54,14 +55,17 @@ export class AddEvent implements OnInit {
 
       isTicketed: [true],
       ticketName: [''],
-      ticketPrice: ['']
+      ticketPrice: [''],
+      host: this.hostId,
+      contact: '',
     });
   }
   ngOnInit(): void {
     const user = localStorage.getItem('user');
     this.hostName = user ? JSON.parse(user).name : '';
+    this.hostId =user ? JSON.parse(user). id : '';
     const hostImg = user ? JSON.parse(user).profileImage : '';
-    this.hostImage = 'http://localhost:5000'+ hostImg
+    this.hostImage = 'http://localhost:5000' + hostImg
   }
   get banners(): FormArray {
     return this.eventForm.get('banners') as FormArray;
@@ -103,40 +107,49 @@ export class AddEvent implements OnInit {
     this.imagePreviews.splice(index, 1);
   }
   public submitEvent(): void {
-    console.log(this.eventForm);
 
-    if (this.eventForm.invalid) return;
+  if (this.eventForm.invalid) return;
 
-    const formData = new FormData();
-    formData.append('title', this.eventForm.value.title);
-    formData.append('category', this.eventForm.value.category);
-    formData.append('startDate', this.eventForm.value.startDate);
-    formData.append('startTime', this.eventForm.value.startTime);
-    formData.append('endTime', this.eventForm.value.endTime);
-    formData.append('location', this.eventForm.value.location);
-    formData.append('description', this.eventForm.value.description);
-    formData.append('isTicketed', this.eventForm.value.isTicketed);
-    formData.append('ticketName', this.eventForm.value.ticketName);
-    formData.append('ticketPrice', this.eventForm.value.ticketPrice);
+  const formData = new FormData();
 
-    this.banners.controls.forEach((control) => {
-      const file = control.value;
-      if (file instanceof File) {
-        formData.append('banners', file);
-      }
-    });
+  formData.append('title', this.eventForm.value.title);
+  formData.append('category', this.eventForm.value.category);
+  formData.append('startDate', this.eventForm.value.startDate);
+  formData.append('startTime', this.eventForm.value.startTime);
+  formData.append('endTime', this.eventForm.value.endTime);
+  formData.append('location', this.eventForm.value.location);
+  formData.append('description', this.eventForm.value.description);
 
-    this.eventService.addEvents(formData).subscribe({
-      next: (res) => {
-        console.log('Event created:', res)
-        this.router.navigate(['/filter-event'])
-      },
-      complete: () => {
-        this.eventForm.reset()
-      },
-      error: (err) => console.error('Error creating event:', err)
-    });
-  }
+  // Convert booleans/numbers to strings for FormData
+  formData.append('isTicketed', this.eventForm.value.isTicketed ? "true" : "false");
+  formData.append('ticketName', this.eventForm.value.ticketName || "");
+  formData.append('ticketPrice', this.eventForm.value.ticketPrice ? String(this.eventForm.value.ticketPrice) : "");
+
+  // Host ID (must be valid ObjectId)
+  formData.append('host', this.hostId);
+
+  formData.append('contact', '');
+
+  // Append banners
+  this.banners.controls.forEach((control) => {
+    const file = control.value;
+    if (file instanceof File) {
+      formData.append('banners', file);
+    }
+  });
+
+  this.eventService.addEvents(formData).subscribe({
+    next: (res) => {
+      console.log("Event created successfully:", res);
+      this.router.navigate(['/filter-event']);
+    },
+    complete: () => {
+      this.eventForm.reset();
+    },
+    error: (err) => console.error('Error creating event:', err)
+  });
+}
+
 
   public onLocationPicked(loc: any) {
     this.eventForm.patchValue({

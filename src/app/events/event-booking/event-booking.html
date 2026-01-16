@@ -1,0 +1,67 @@
+<div class="modal-overlay" (click)="closeModal()"></div>
+
+<div class="booking-modal">
+
+  <!-- STEP 1: SELECT TICKET -->
+  @if (step === 1) {
+    <div class="step-body">
+      <h3>Select Tickets</h3>
+
+      <div class="ticket-box">
+        <div>
+          <p class="ticket-title">{{ event?.ticketName || 'Standard Ticket' }}</p>
+          <p class="ticket-price">₹{{ ticketPrice }}</p>
+        </div>
+
+        <div class="qty-controls">
+          <button (click)="qty = Math.max(1, qty - 1)">−</button>
+          <span>{{ qty }}</span>
+          <button (click)="qty = qty + 1">+</button>
+        </div>
+      </div>
+
+      <button class="btn-primary" (click)="nextStep()">Proceed →</button>
+    </div>
+  }
+
+  <!-- STEP 2: ATTENDEE DETAILS -->
+  @if (step === 2) {
+    <div class="step-body">
+      <button class="back-btn" (click)="prevStep()">← Back</button>
+
+      <h3>Attendee Details</h3>
+
+      <form [formGroup]="attendeeForm">
+        <input placeholder="Full Name" formControlName="fullName" />
+        <input placeholder="Email" formControlName="email" type="email" />
+        <input placeholder="Phone Number" formControlName="phone" />
+      </form>
+
+      <button class="btn-primary" (click)="nextStep()">Continue to Checkout →</button>
+    </div>
+  }
+
+  <!-- STEP 3: ORDER SUMMARY -->
+  @if (step === 3) {
+    <div class="step-body">
+      <button class="back-btn" (click)="prevStep()">← Back</button>
+
+      <h3>Order Summary</h3>
+
+      <div class="summary-card">
+        <p>{{ attendeeForm.value.fullName }}</p>
+        <p>{{ attendeeForm.value.email }}</p>
+        <p>₹{{ ticketPrice }} × {{ qty }}</p>
+      </div>
+
+      <div class="summary-totals">
+        <p>Sub Total: ₹{{ ticketPrice * qty }}</p>
+        <p class="total">Total: ₹{{ ticketPrice * qty }}</p>
+      </div>
+
+      <button class="btn-success" (click)="payNow()">Pay Now</button>
+    </div>
+  }
+
+</div>
+

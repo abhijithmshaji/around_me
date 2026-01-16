@@ -1,0 +1,82 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(3px);
+}
+
+.booking-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 420px;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border-radius: 14px;
+  padding: 25px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.step-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.ticket-box {
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.qty-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  button {
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 50%;
+    background: #eee;
+  }
+}
+
+.btn-primary {
+  background: #4a4a4a;
+  color: #fff;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.btn-success {
+  background: #20b44b;
+  color: #fff;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: #555;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.summary-card {
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.summary-totals {
+  font-weight: 500;
+  .total {
+    font-size: 20px;
+    margin-top: 10px;
+  }
+}
