@@ -9,6 +9,7 @@ import { EventsFilter } from './events/events-filter/events-filter/events-filter
 import { UserProfile } from './pages/user/user-profile/user-profile';
 import { EventDetails } from './events/event-details/event-details';
 import { EventBooking } from './events/event-booking/event-booking';
+import { EventList } from './events/event-list/event-list';
 
 export const routes: Routes = [
     {
@@ -28,6 +29,9 @@ export const routes: Routes = [
     // },
     {
         path: 'event-details/:id', component: EventDetails
+    },
+     {
+        path: 'event-list', component: EventList
     },
     {
         path: 'filter-event', component: EventsFilter, canActivate:[authGuard]

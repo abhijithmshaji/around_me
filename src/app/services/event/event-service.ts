@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -11,6 +11,16 @@ export class EventService {
 
   private baseUrl = 'http://localhost:5000/api/';
 
+  public eventSignal = signal<any[]>([])
+
+  public setEvents(events: any[]) {
+    this.eventSignal.set(events);
+  }
+
+  public clear() {
+    this.eventSignal.set([]);
+  }
+
   public getEvents(): Observable<any> {
     return this.http.get(`${this.baseUrl}events`);
   }
@@ -19,5 +29,8 @@ export class EventService {
   }
   public getEventById(id: string | null): Observable<any> {
     return this.http.get(`${this.baseUrl}events/${id}`)
+  }
+  public deleteEvet(id:string|null):Observable<any>{
+    return this.http.delete(`${this.baseUrl}events/${id}`)
   }
 }

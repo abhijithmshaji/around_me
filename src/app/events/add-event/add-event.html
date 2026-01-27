@@ -43,18 +43,29 @@
       </div>
 
       <div class="form-row">
-        <div class="form-group">
-          <label>Start Date</label>
-          <input type="date" formControlName="startDate" />
-        </div>
+        <div class="form-group"> <label>Start Date</label> <input type="date" formControlName="startDate" /> </div>
         <div class="form-group">
           <label>Start Time</label>
-          <input type="time" formControlName="startTime" />
+          <select formControlName="startTime">
+            <option value="">Select time</option>
+
+            @for (t of timeSlots; track $index) {
+            <option [value]="t">{{ t }}</option>
+            }
+          </select>
         </div>
+
         <div class="form-group">
           <label>End Time</label>
-          <input type="time" formControlName="endTime" />
+          <select formControlName="endTime">
+            <option value="">Select time</option>
+
+            @for (t of timeSlots; track $index) {
+            <option [value]="t">{{ t }}</option>
+            }
+          </select>
         </div>
+
       </div>
 
       <div class="form-group">
@@ -65,14 +76,6 @@
 
       <app-event-location-picker (locationSelected)="onLocationPicked($event)">
       </app-event-location-picker>
-
-      <!-- Optional – show lat/lng -->
-      <div class="coords" *ngIf="pickedLocation">
-        <p>
-          📍 Latitude: {{ pickedLocation.lat }} <br>
-          📍 Longitude: {{ pickedLocation.lng }}
-        </p>
-      </div>
 
       <div class="form-group">
         <label>Description</label>
@@ -122,26 +125,38 @@
     <!-- Step 3: Ticketing -->
     @if (currentStep === EventStep.Ticketing) {
     <section>
-      <h3>Ticketing</h3>
+      <h3>What type of event are you running?</h3>
       <div class="toggle">
         <button type="button" [class.active]="eventForm.value.isTicketed"
-          (click)="eventForm.patchValue({ isTicketed: true })">
-          Ticketed Event
-        </button>
+          (click)="eventForm.patchValue({ isTicketed: true })"> Ticketed Event </button>
         <button type="button" [class.active]="!eventForm.value.isTicketed"
-          (click)="eventForm.patchValue({ isTicketed: false })">
-          Free Event
+          (click)="eventForm.patchValue({ isTicketed: false })"> Free Event
         </button>
+      </div>
+      @if (eventForm.value.isTicketed) {
+      <div class="ticket-header">
+        <h4>What tickets are you selling?</h4>
+        <button type="button" class="add-btn" (click)="addTicket()">+ Add Ticket</button>
+        <div class="ticket-list">
+          @for (ticket of tickets.controls; track $index; let i = $index) {
+          <div class="ticket-row">
+
+            <input type="text" [formControl]="getTicketNameControl(i)" placeholder="Ticket Name" />
+
+            <input type="number" [formControl]="getTicketPriceControl(i)" placeholder="Price (₹)" />
+
+            <button type="button" class="remove-btn" (click)="removeTicket(i)">×</button>
+
+          </div>
+          }
+        </div>
       </div>
 
-      @if (eventForm.value.isTicketed) {
-      <div class="form-row">
-        <input type="text" formControlName="ticketName" placeholder="Ticket Name" />
-        <input type="number" formControlName="ticketPrice" placeholder="Price" />
-      </div>
       }
     </section>
+
     }
+
 
     <!-- Step 4: Review -->
     @if (currentStep === EventStep.Review) {
@@ -190,9 +205,15 @@
                 <strong>Type:</strong>
                 {{ eventForm.value.ticketName || 'Free Event' }}
               </p>
-              <p *ngIf="eventForm.value.isTicketed">
-                <strong>Price:</strong> ₹{{ eventForm.value.ticketPrice }}
+              @if(eventForm.value.isTicketed){
+
+              <p>
+                @for (item of eventForm.value.ticketPrice; track $index) {
+
+                <strong>Price:</strong> ₹{{ item.ticketPrice }}
+                }
               </p>
+              }
             </div>
 
           </div>
@@ -213,7 +234,7 @@
             <h3>Hosted by</h3>
 
             <div class="host-card">
-              <img class="host-img" [src]="hostImage" alt="Profile"  routerLink="/profile"/>
+              <img class="host-img" [src]="hostImage" alt="Profile" routerLink="/profile" />
               <div class="host-details">
                 <p><strong>{{hostName}}</strong></p>
                 <div class="host-buttons">

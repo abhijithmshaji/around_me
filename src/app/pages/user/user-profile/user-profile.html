@@ -5,8 +5,9 @@
         <h3>Account Settings</h3>
         <ul>
             <li [ngClass]="accountInfo?'active':''" (click)="onClickChangeAccountInfo()">Account Info</li>
-            <li (click)="onClickChangeEmail()"[ngClass]="changeEmail?'active':''">Change Email</li>
-            <li (click)="onClickChangePassword()" [ngClass]="changePassword?'active':''">Password</li>
+            <li (click)="onClickChangeEmail()" [ngClass]="changeEmail?'active':''">Change Email</li>
+            <li (click)="onClickChangePassword()" [ngClass]="changePassword?'active':''">Change Password</li>
+            <li (click)="manageEvents()" [ngClass]="yourEvents?'active':''">Your Events</li>
         </ul>
     </aside>
 
@@ -18,8 +19,11 @@
         @if (changeEmail) {
         <app-change-email></app-change-email>
         }@else if (changePassword) {
-            <app-change-password></app-change-password>
+        <app-change-password></app-change-password>
         }
+        <!-- @else if (yourEvents) {
+        <app-event-list></app-event-list>
+        } -->
         @else {
         <!-- Form -->
         <h2>Account Information</h2>
@@ -30,7 +34,7 @@
                 @if (profileImage) {
                 <img [src]="profileImage" alt="Profile" />
                 }@else {
-                <div class="placeholder"></div>
+                <img src="assets/images/user.png" alt="Profile" />
                 }
                 <label class="upload-btn">
                     <fa-icon [icon]="faCamera"></fa-icon>

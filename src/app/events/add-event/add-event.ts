@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray, FormControl } from '@angular/forms';
 import { EventService } from '../../services/event/event-service';
 import { Router } from '@angular/router';
 import { EventLocationPicker } from "../../common/event-location-picker/event-location-picker/event-location-picker";
@@ -19,28 +19,37 @@ enum EventStep {
   styleUrl: './add-event.scss'
 })
 export class AddEvent implements OnInit {
-  public EventStep = EventStep; // expose enum for template
+
+  public EventStep = EventStep;
   public currentStep = EventStep.Edit;
   public imagePreviews: string[] = [];
+  public timeSlots: string[] = [];
 
-  public eventForm: FormGroup;
-  public pickedLocation: any = null;
-  public hostName!: string;
-  public hostId!: string;
-  public hostImage!: any;
+  public eventForm!: FormGroup;
 
-  public selectedLocation!: {
-    lat: number;
-    lng: number;
-    address: string;
-  };
+  public hostId: string = "";
+  public hostName: string = "";
+  public hostImage: string = "";
+  public defaultImg = '/assets/images/user.png'
+  public pickedLocation: any = null
 
-  constructor(private fb: FormBuilder,
+  constructor(
+    private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
     private eventService: EventService,
-    private router: Router) {
+    private router: Router
+  ) { }
+
+  ngOnInit(): void {
+
+    this.generateTimeSlots();
+
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    this.hostId = user?.id || "";
+    this.hostName = user?.name || "";
+    this.hostImage = user?.profileImage ? "http://localhost:5000" + user.profileImage : this.defaultImg;
+
     this.eventForm = this.fb.group({
-      // Step 1: Event Details
       title: ['', Validators.required],
       category: ['', Validators.required],
       startDate: ['', Validators.required],
@@ -54,23 +63,43 @@ export class AddEvent implements OnInit {
       banners: this.fb.array([]),
 
       isTicketed: [true],
-      ticketName: [''],
-      ticketPrice: [''],
-      host: this.hostId,
-      contact: '',
+      tickets: this.fb.array([]),   // correct dynamic FormArray
+
+      host: [this.hostId, Validators.required],
+      contact: ['']
     });
   }
-  ngOnInit(): void {
-    const user = localStorage.getItem('user');
-    this.hostName = user ? JSON.parse(user).name : '';
-    this.hostId =user ? JSON.parse(user). id : '';
-    const hostImg = user ? JSON.parse(user).profileImage : '';
-    this.hostImage = 'http://localhost:5000' + hostImg
+
+  private generateTimeSlots() {
+    const times = [];
+    for (let hour = 0; hour < 24; hour++) {
+      for (let minute of [0, 30]) {   // 30 min interval
+        const suffix = hour >= 12 ? 'PM' : 'AM';
+        const adjusted = hour % 12 || 12;
+        const formatted = `${adjusted}:${minute.toString().padStart(2, '0')} ${suffix}`;
+        times.push(formatted);
+      }
+    }
+    this.timeSlots = times;
   }
+
+  /* Form Getters */
   get banners(): FormArray {
     return this.eventForm.get('banners') as FormArray;
   }
 
+  get tickets(): FormArray {
+    return this.eventForm.get('tickets') as FormArray;
+  }
+  getTicketNameControl(i: number): FormControl {
+    return this.tickets.at(i).get('ticketName') as FormControl;
+  }
+
+  getTicketPriceControl(i: number): FormControl {
+    return this.tickets.at(i).get('ticketPrice') as FormControl;
+  }
+
+  /* Step Navigation */
   public nextStep() {
     if (this.currentStep < EventStep.Review) {
       this.currentStep++;
@@ -83,6 +112,7 @@ export class AddEvent implements OnInit {
     }
   }
 
+  /* Banner Upload */
   public onFilesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (!input.files?.length) return;
@@ -102,83 +132,92 @@ export class AddEvent implements OnInit {
 
     input.value = '';
   }
+
   public removeImage(index: number): void {
     this.banners.removeAt(index);
     this.imagePreviews.splice(index, 1);
   }
+  
+
+  /* Ticket Handling */
+  public addTicket(): void {
+    const ticketGroup = this.fb.group({
+      ticketName: ['', Validators.required],
+      ticketPrice: ['', [Validators.required, Validators.min(0)]]
+    });
+
+    this.tickets.push(ticketGroup);
+  }
+
+  public removeTicket(index: number): void {
+    this.tickets.removeAt(index);
+  }
+
+  /* Submit Event */
   public submitEvent(): void {
-
-  if (this.eventForm.invalid) return;
-
-  const formData = new FormData();
-
-  formData.append('title', this.eventForm.value.title);
-  formData.append('category', this.eventForm.value.category);
-  formData.append('startDate', this.eventForm.value.startDate);
-  formData.append('startTime', this.eventForm.value.startTime);
-  formData.append('endTime', this.eventForm.value.endTime);
-  formData.append('location', this.eventForm.value.location);
-  formData.append('description', this.eventForm.value.description);
-
-  // Convert booleans/numbers to strings for FormData
-  formData.append('isTicketed', this.eventForm.value.isTicketed ? "true" : "false");
-  formData.append('ticketName', this.eventForm.value.ticketName || "");
-  formData.append('ticketPrice', this.eventForm.value.ticketPrice ? String(this.eventForm.value.ticketPrice) : "");
-
-  // Host ID (must be valid ObjectId)
-  formData.append('host', this.hostId);
-
-  formData.append('contact', '');
-
-  // Append banners
-  this.banners.controls.forEach((control) => {
-    const file = control.value;
-    if (file instanceof File) {
-      formData.append('banners', file);
+    if (this.eventForm.invalid) {
+      this.eventForm.markAllAsTouched();
+      
+      return;
     }
-  });
+    
+    const formData = new FormData();
+    
+    const formValues = this.eventForm.getRawValue();
+    console.log(this.eventForm.value);
 
-  this.eventService.addEvents(formData).subscribe({
-    next: (res) => {
-      console.log("Event created successfully:", res);
-      this.router.navigate(['/filter-event']);
-    },
-    complete: () => {
-      this.eventForm.reset();
-    },
-    error: (err) => console.error('Error creating event:', err)
-  });
-}
+    // Append simple fields
+    formData.append('title', formValues.title);
+    formData.append('category', formValues.category);
+    formData.append('startDate', formValues.startDate);
+    formData.append('startTime', formValues.startTime);
+    formData.append('endTime', formValues.endTime);
+    formData.append('location', formValues.location);
+    formData.append('description', formValues.description);
 
+    formData.append('lat', formValues.lat);
+    formData.append('lng', formValues.lng);
 
-  public onLocationPicked(loc: any) {
-    this.eventForm.patchValue({
-      location: loc.address
+    formData.append('isTicketed', formValues.isTicketed.toString());
+
+    // Append dynamic tickets list
+    formData.append('tickets', JSON.stringify(this.tickets.value));
+
+    // Host
+    formData.append('host', this.hostId);
+    formData.append('contact', formValues.contact);
+
+    // Append banner images
+    this.banners.controls.forEach((control) => {
+      if (control.value instanceof File) {
+        formData.append('banners', control.value);
+      }
+    });
+
+    this.eventService.addEvents(formData).subscribe({
+      next: (res) => {
+        alert("Event created successfully!");
+        this.router.navigate(['/filter-event']);
+      },
+      error: (err) => {
+        console.error("Error creating event:", err);
+        alert("Failed to create event");
+      }
     });
   }
 
-  // searchAddress(event: any) {
-  //   const query = event.target.value;
+  /* Location Picker Callback */
+  onLocationPicked(loc: any) {
+    this.pickedLocation = loc;
 
-  //   if (query.length < 3) return;
+    this.eventForm.patchValue({
+      location: loc.address,
+      lat: loc.lat,
+      lng: loc.lng
+    });
+  }
 
-  //   fetch(`https://nominatim.openstreetmap.org/search?format=json&countrycodes=in&q=${query}`)
-  //     .then(res => res.json())
-  //     .then(results => {
-  //       if (results.length > 0) {
-  //         const place = results[0];
-
-  //         // Set map marker via child component
-  //         this.onLocationPicked({
-  //           lat: place.lat,
-  //           lng: place.lon,
-  //           address: place.display_name
-  //         });
-  //       }
-  //     });
-  // }
-
-
+  /* Location Search */
   onSearchTyping(event: any) {
     const query = event.target.value;
 
@@ -198,6 +237,4 @@ export class AddEvent implements OnInit {
         });
       });
   }
-
-
 }

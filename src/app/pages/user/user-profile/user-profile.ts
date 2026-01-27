@@ -2,21 +2,24 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faCamera } from '@fortawesome/free-solid-svg-icons';
+import { faCamera, faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { User } from '../../../services/user/user';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ChangeEmail } from "../change-email/change-email";
 import { ChangePassword } from "../change-password/change-password";
+import { EventList } from "../../../events/event-list/event-list";
+import { EventService } from '../../../services/event/event-service';
 
 @Component({
   selector: 'app-user-profile',
-  imports: [CommonModule, ReactiveFormsModule, FaIconComponent, ChangeEmail, ChangePassword],
+  imports: [CommonModule, ReactiveFormsModule, FaIconComponent, ChangeEmail, ChangePassword, EventList],
   templateUrl: './user-profile.html',
   styleUrls: ['./user-profile.scss']
 })
 export class UserProfile implements OnInit {
 
   public faCamera = faCamera;
+  // public faProfile = faUserCircle;
   public profileImage: string | ArrayBuffer | null = null;
   public selectedFile: File | null = null;
   public baseUrl = "http://localhost:5000";
@@ -24,8 +27,9 @@ export class UserProfile implements OnInit {
   public changeEmail = false;
   public changePassword = false;
   public accountInfo = true;
+  public yourEvents = false;
 
-  constructor(private fb: FormBuilder, private userService: User, private router: Router, private cdr: ChangeDetectorRef) {
+  constructor(private fb: FormBuilder, private userService: User, private eventService: EventService, private router: Router, private cdr: ChangeDetectorRef) {
 
     this.profileForm = this.fb.group({
 
@@ -58,7 +62,6 @@ export class UserProfile implements OnInit {
 
   ngOnInit() {
     const userData = JSON.parse(localStorage.getItem("user") || "{}");
-
 
     // Split full name
     const fullName = userData.name || "";
@@ -172,6 +175,14 @@ export class UserProfile implements OnInit {
   }
   public onClickChangePassword() {
     this.changePassword = true;
+    this.changeEmail = false;
+    this.accountInfo = false;
+  }
+  public manageEvents() {
+
+    this.router.navigate(['/event-list'])
+    this.yourEvents = true;
+    this.changePassword = false;
     this.changeEmail = false;
     this.accountInfo = false;
   }

@@ -137,6 +137,87 @@
       }
     }
   }
+
+  .ticket-header {
+  margin-top: 24px;
+  margin-bottom: 24px;
+  padding: 0 5px;
+
+  h4 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #333;
+  }
+
+  .add-btn {
+    background: none;
+    border: 1px solid #ccc;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    float: right;
+    margin-top: -40px;
+    transition: 0.2s ease;
+    color: #333;
+
+    &:hover {
+      background: #0e0d0d;
+      border-color: #aaa;
+      color: white;
+    }
+  }
+
+  .ticket-list {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .ticket-row {
+    display: grid;
+    grid-template-columns: 4fr 2fr 0.5fr;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .ticket-row input {
+    width: auto;
+    padding: 10px 12px;
+    border: 1px solid #dadada;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #444;
+    background-color: #fff;
+
+    &::placeholder {
+      color: #aaa;
+    }
+
+    &:focus {
+      border-color: #6a5acd;
+      box-shadow: 0 0 0 2px rgba(106, 90, 205, 0.15);
+      outline: none;
+    }
+  }
+
+  .remove-btn {
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: #777;
+    cursor: pointer;
+    transition: 0.2s ease;
+
+    &:hover {
+      color: #d00;
+      transform: scale(1.1);
+    }
+  }
+}
+
 }
 .upload-area {
   position: relative;
@@ -371,6 +452,8 @@
   color: #fff;
   border: none;
 }
+
+
 
 
 

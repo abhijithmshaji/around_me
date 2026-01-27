@@ -1,0 +1,36 @@
+<div class="event-table-wrapper">
+    
+  <h2 class="title">My Events</h2>
+
+  <table class="event-table">
+    <thead>
+      <tr>
+        <th>Event Name</th>
+        <th>Date</th>
+        <th>Location</th>
+        <th class="action-col">Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      @for (event of eventsList; track event._id) {
+      <tr>
+        <td>{{ event.title }}</td>
+        <td>{{ event.startDate | date:'dd MMM yyyy' }}</td>
+        <td>{{ event.location }}</td>
+
+        <td class="action-col">
+          <button class="action-btn edit" (click)="editEvent(event._id)">
+            <fa-icon [icon]="faEdit"></fa-icon>
+          </button>
+
+          <button class="action-btn delete" (click)="deleteEvent(event._id)">
+            <fa-icon [icon]="faTrash"></fa-icon>
+          </button>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
